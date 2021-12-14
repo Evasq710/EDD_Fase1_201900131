@@ -1,0 +1,15 @@
+h1 {
+    font-size: 4em;
+    text-align: center;
+    margin: 5%;
+}
+
+h2 {
+    font-size: 2em;
+    text-align: center;
+}
+
+#login {
+    text-align: center;
+    margin: 5% 20% 5% 20%;
+}
