@@ -1,5 +1,7 @@
 'use strict';
 
+// Registro individual de usuarios
+
 var radioEmpleado = document.getElementById('optionEmpleado');
 var radioCliente = document.getElementById('optionCliente');
 var radioProveedor = document.getElementById('optionProveedor');
@@ -8,8 +10,8 @@ var formgroupEmpleado = document.getElementById('datosEmpleado');
 var formgroupCliente = document.getElementById('datosCliente');
 var formgroupProveedor = document.getElementById('datosProveedor');
 
-var submit = document.getElementById("submitUsuario")
-submit.addEventListener('click', function(event){
+var submitUsuario = document.getElementById("submitUsuario")
+submitUsuario.addEventListener('click', function(event){
     event.preventDefault();
 });
 
@@ -90,5 +92,49 @@ function registrarUsuario(){
         } else {
             alert("Campos vacíos, todos los campos son obligatorios.");
         }
+    }
+}
+
+// Cargas masivas
+
+var radioCargaEmpleados = document.getElementById('cargaEmpleados');
+var radioCargaClientes = document.getElementById('cargaClientes');
+var radioCargaProveedores = document.getElementById('cargaProveedores');
+var radioCargaEventos = document.getElementById('cargaEventos');
+
+var submitCarga = document.getElementById("submitCarga")
+submitCarga.addEventListener('click', function(event){
+    event.preventDefault();
+});
+
+function cargaMasiva(){
+    let inputFile = document.getElementById('fileCarga').files[0];
+    if(typeof inputFile !== 'undefined'){
+        if(inputFile.name.split('.')[1] == 'json'){
+            try{
+                const reader = new FileReader();
+                reader.addEventListener('load', (event) => {
+                    console.log(event.target.result);
+                    // TODO CARGA MASIVA
+                    if(radioCargaEmpleados.checked){
+                        
+                    } else if(radioCargaClientes.checked){
+
+                    } else if(radioCargaProveedores.checked){
+
+                    } else if(radioCargaEventos.checked){
+
+                    }
+                });
+                reader.readAsText(inputFile, 'UTF-8');
+            }catch(error){
+                console.log(error);
+                alert("No ha sido posible realizar la carga masiva (Ver consola).");
+            }
+        }else {
+            alert("El archivo debe ser JSON (extensión .json)");
+        }
+    } else {
+        alert("Debes seleccionar un archivo para la carga masiva.");
     }
 }
