@@ -1,7 +1,12 @@
+* {
+    margin: 0;
+    padding: 0;
+  }
+
 h1 {
     font-size: 4em;
     text-align: center;
-    margin: 5%;
+    margin: 5% 5% 4% 5%;
 }
 
 h2 {
@@ -12,4 +17,16 @@ h2 {
 #login {
     text-align: center;
     margin: 5% 20% 5% 20%;
+}
+
+.container {
+    margin: 5%;
+}
+
+.inner-container {
+    padding: 3% 5%;
+}
+
+.form-check {
+    margin: 2% 0 2%;
 }

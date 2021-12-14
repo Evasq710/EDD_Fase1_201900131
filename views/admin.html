@@ -9,14 +9,179 @@
     <link href="../styles/styles.css" rel="stylesheet"/>
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <title>ERPS Admin</title>
 </head>
 <body>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="./admin.html">ERPS</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                  <span>PROYECTO EDD - FACULTAD DE INGENIERIA USAC</span>
+              </li>
+            </ul>
+            <button type="button" class="btn btn-outline-danger" onclick="location.href='../index.html'">
+                <span class="material-icons" style="margin-right: 0.5em;">logout</span>Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </nav>
 
     <h1>Administrador</h1>
     <h2>Enterprise resource planning system -ERPS-</h2>
-    
+
+    <div class="container">
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#registro">REGISTRO DE USUARIOS Y PROVEEDORES</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#eliminacion">ELIMINACIÓN DE USUARIOS Y PROVEEDORES</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#cargas">CARGAS MASIVAS</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#reportes">REPORTES</a>
+            </li>
+          </ul>
+
+          <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade" id="registro">
+              <div class="inner-container">
+                <form>
+                    <fieldset>
+                      <fieldset class="form-group">
+                        <h3>Tipo de usuario a registrar</h3>
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optionsUser" id="optionEmpleado" value="empleado" checked="" onclick="tipoUsuario()">
+                            Empleado (Vendedor)
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optionsUser" id="optionCliente" value="cliente" onclick="tipoUsuario()">
+                            Cliente
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optionsUser" id="optionProveedor" value="proveedor" onclick="tipoUsuario()">
+                            Proveedor
+                          </label>
+                        </div>
+                      </fieldset>
+
+                      <div class="form-group" id="datosEmpleado">
+                        <label class="form-label mt-4">Datos del empleado</label>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="idEmpleado" placeholder="ID">
+                          <label for="idEmpleado">ID</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="text" class="form-control" id="userEmpleado" placeholder="Username">
+                          <label for="userEmpleado">Username</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="text" class="form-control" id="nombreEmpleado" placeholder="Nombre">
+                          <label for="nombreEmpleado">Nombre</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="edadEmpleado" placeholder="Edad">
+                          <label for="edadEmpleado">Edad</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="email" class="form-control" id="correoEmpleado" placeholder="nombre@ejemplo.com">
+                          <label for="correoEmpleado">Correo electrónico</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="password" class="form-control" id="passEmpleado" placeholder="Contraseña">
+                          <label for="passEmpleado">Contraseña</label>
+                        </div>
+                      </div>
+
+                      <div class="form-group" id="datosCliente" style="display: none;">
+                        <label class="form-label mt-4">Datos del Cliente</label>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="idVendedor" placeholder="ID Empleado">
+                          <label for="idVendedor">ID Empleado asignado</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="idCliente" placeholder="ID Cliente">
+                          <label for="idCliente">ID Cliente</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="text" class="form-control" id="nombreCliente" placeholder="Nombre">
+                          <label for="nombreCliente">Nombre</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="email" class="form-control" id="correoCliente" placeholder="nombre@ejemplo.com">
+                          <label for="correoCliente">Correo electrónico</label>
+                        </div>
+                      </div>
+
+                      <div class="form-group" id="datosProveedor" style="display: none;">
+                        <label class="form-label mt-4">Datos del Proveedor</label>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="idProveedor" placeholder="ID">
+                          <label for="idProveedor">ID</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="text" class="form-control" id="nombreProveedor" placeholder="Nombre">
+                          <label for="nombreProveedor">Nombre</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="text" class="form-control" id="direccionProveedor" placeholder="Dirección">
+                          <label for="direccionProveedor">Dirección</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="telefonoProveedor" placeholder="Teléfono">
+                          <label for="telefonoProveedor">Teléfono</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                          <input type="email" class="form-control" id="correoProveedor" placeholder="nombre@ejemplo.com">
+                          <label for="correoProveedor">Correo electrónico</label>
+                        </div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary" id="submitUsuario" onclick="registrarUsuario()">REGISTRAR USUARIO</button>
+                    </fieldset>
+                  </form>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="eliminacion">
+                <div class="inner-container">
+                    <p>ELIMINACION truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit.</p>
+                </div>             
+            </div>
+
+            <div class="tab-pane fade" id="cargas">
+                <div class="inner-container">
+                    <p>CARGAS truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit.</p>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="reportes">
+                <div class="inner-container">
+                    <p>REPORTES truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit.</p>
+                </div>
+            </div>
+          </div>
+
+    </div>
+
+    <script src="../js/admin.js"></script>
 
 </body>
 </html>
