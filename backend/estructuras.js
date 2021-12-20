@@ -50,6 +50,27 @@ class Avl{
         }
     }
 
+    insertarEvento(idVendedor, evento){
+        return this.insertarEventoEnVendedor(this.raiz, idVendedor, evento.mes, evento.desc, evento.hora, evento.dia);
+    }
+
+    insertarEventoEnVendedor(raizActual, idVendedor, mes, descripcion, hora, dia){
+        if(raizActual != null){
+            if (idVendedor == raizActual.dato){
+                raizActual.calendario.insertarEventoEnMes(mes, descripcion, hora, dia);
+                //True o false indica que se encontró al vendedor, no la correcta inserción del evento
+                return true;
+            }else if(idVendedor < raizActual.dato){
+                return this.insertarEventoEnVendedor(raizActual.izquierdo, idVendedor, mes, descripcion, hora, dia);
+            }else{
+                return this.insertarEventoEnVendedor(raizActual.derecho, idVendedor, mes, descripcion, hora, dia);
+            }
+        }else{
+            console.log(`No se encontró el vendedor con el id ${idVendedor}. No se pudo insertar el evento al vendedor.`);
+            return false;
+        }
+    }
+
     booleanCredencialesVendedor(username, password){
         return this.verificacionCredenciales(this.raiz, username, password);
     }
@@ -198,6 +219,15 @@ class Avl{
         }
     }
 
+    inOrderMesesEventos(raiz_actual){
+        if(raiz_actual != null){
+            this.inOrderMesesEventos(raiz_actual.izquierdo);
+            console.log(`======${raiz_actual.dato} - ${raiz_actual.vendedor.nombre}======`)
+            raiz_actual.calendario.mostrarMesesYEventos();
+            this.inOrderMesesEventos(raiz_actual.derecho);
+        }
+    }
+
     generarDotVendedores(){
         let cadena = "digraph arbol {\ngraph[label=\"Arbol AVL Vendedores\"] node[shape=\"doubleoctagon\", style=\"filled\", fillcolor=\"cadetblue\"]\n"
         cadena += this.generarNodos(this.raiz);
@@ -283,6 +313,7 @@ class NodoDobleMes{
     constructor(mes){
         // Pasar el mes como viene en el JSON, con el número
         this.mes = mes;
+        this.matrizEventos = new Matriz();
         this.siguiente = null;
         this.anterior = null;
     }
@@ -292,6 +323,23 @@ class NodoDobleMes{
 class ListaDobleMeses{
     constructor(){
         this.primero = null;
+    }
+
+    insertarEventoEnMes(mes, descripcion, hora, dia){
+        let actual = this.primero;
+        let noExiste = true;
+        while(actual != null){
+            if(actual.mes == mes){
+                actual.matrizEventos.insertarEvento(descripcion, hora, dia);
+                noExiste = false;
+                break;
+            }
+            actual = actual.siguiente;
+        }
+        if(noExiste){
+            this.insertarMes(mes);
+            this.insertarEventoEnMes(mes, descripcion, hora, dia);
+        }
     }
 
     insertarMes(mes){
@@ -322,11 +370,12 @@ class ListaDobleMeses{
         }
     }
 
-    mostrarMeses(){
+    mostrarMesesYEventos(){
         let actual = this.primero;
-        console.log("***** Mostrar Meses *****")
+        console.log("*** Meses Y eventos De Empleado **")
         while(actual != null){
-            console.log(`-> ${actual.mes}`);
+            console.log(`-----> ${actual.mes}`);
+            actual.matrizEventos.generarDotMatrizEventos();
             actual = actual.siguiente;
         }
     }
@@ -521,7 +570,7 @@ class Matriz{
         this.cabecerasN = new ListaCabecera();
     }
 
-    insertar(descripcion, hora, dia){
+    insertarEvento(descripcion, hora, dia){
         let nodoCabeceraM = this.cabecerasM.obtenerCabecera(hora);
         let nodoCabeceraN = this.cabecerasN.obtenerCabecera(dia);
 
@@ -558,7 +607,7 @@ class Matriz{
         }
     }
 
-    graficarMatriz(){
+    generarDotMatrizEventos(){
         let cadena = "digraph Matriz{\nlayout = neato;\n";
         cadena+= "node[shape = box,width=0.7,height=0.7,fillcolor=\"azure2\" color=\"white\" style=\"filled\"];\n";
         cadena+= "edge[style = \"bold\"]; \n"
@@ -668,21 +717,32 @@ function recuperarAVL(){
 }
 
 function recuperacionAnidadainOrder(raiz_actual){
+    //Función que recorre los empleados inorder, actualizando las estructuras de cada empleado
     if(raiz_actual != null){
         recuperacionAnidadainOrder(raiz_actual.izquierdo);
-
-        let listaSerializadaClientes = raiz_actual.listaClientes;
-        let listaAnidadaClientes = new ListaDobleClientes();
-        Object.assign(listaAnidadaClientes,listaSerializadaClientes);
-        raiz_actual.listaClientes = listaAnidadaClientes;
-
-        let listaSerializadaMeses = raiz_actual.calendario;
-        let listaAnidadaMeses = new ListaDobleMeses();
-        Object.assign(listaAnidadaMeses,listaSerializadaMeses);
-        raiz_actual.calendario = listaAnidadaMeses;
-
-        //TODO Verificar EDD anidadas en CALENDARIO
-
+        try{
+            let listaSerializadaClientes = raiz_actual.listaClientes;
+            let listaAnidadaClientes = new ListaDobleClientes();
+            Object.assign(listaAnidadaClientes, listaSerializadaClientes);
+            raiz_actual.listaClientes = listaAnidadaClientes;
+    
+            let listaSerializadaMeses = raiz_actual.calendario;
+            let listaAnidadaMeses = new ListaDobleMeses();
+            Object.assign(listaAnidadaMeses, listaSerializadaMeses);
+            raiz_actual.calendario = listaAnidadaMeses;
+    
+            //TODO Verificar EDD anidadas en CALENDARIO
+            let mesActual = listaAnidadaMeses.primero;
+            while(mesActual!= null){
+                let matrizSerializada = mesActual.matrizEventos;
+                let matrizEventosAnidada = new Matriz()
+                Object.assign(matrizEventosAnidada, matrizSerializada);
+                mesActual.matrizEventos = matrizEventosAnidada;
+                mesActual = mesActual.siguiente;
+            }
+        }catch(error){
+            console.log(error);
+        }
         recuperacionAnidadainOrder(raiz_actual.derecho);
     }
 }
@@ -729,6 +789,28 @@ function crearClientes(){
     }
 }
 
+function crearEventos(){
+    let strEventos = localStorage.getItem("eventosJSON");
+    if(strEventos != null){
+        let arrVendedores = JSON.parse(strEventos);
+        
+        arrVendedores.forEach(vendedor => {
+            vendedor.eventos.forEach(evento => {
+                try{
+                    // TODO llevar control de los que devuelven false
+                    let vendedorEncontrado = avl_vendedores.insertarEvento(vendedor.id, evento);
+                }catch(error){
+                    // TODO Llevar el control de los que generen error
+                    console.log(error);
+                }
+            });
+        });
+        localStorage.removeItem("eventosJSON");
+        actualizarVendedoresStorage();
+        alert("Se han agregado los eventos a los vendedores correctamente. Ver consola para más detalles.")
+    }
+}
+
 function actualizarVendedoresStorage(){
     let avl_circularJSON = CircularJSON.stringify(avl_vendedores);
     let avlString = JSON.stringify(avl_circularJSON);
@@ -736,7 +818,10 @@ function actualizarVendedoresStorage(){
 }
 
 function prueba(){
+    console.log("**************DOT VENDEDORES****************");
     avl_vendedores.generarDotVendedores();
-    console.log("******************************");
+    console.log("**************DETALLE CLIENTES****************");
     avl_vendedores.inOrderClientes(avl_vendedores.raiz);
+    console.log("**************DOT EVENTOS POR MES****************");
+    avl_vendedores.inOrderMesesEventos(avl_vendedores.raiz);
 }

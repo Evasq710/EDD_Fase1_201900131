@@ -164,7 +164,21 @@ function cargaMasiva(){
 
                 } else if(radioCargaEventos.checked){
                     if(avl_vendedores.raiz != null){
-
+                        let cargaJSON = localStorage.getItem("cargaJSON");
+                        if(cargaJSON != null){
+                            let objetoEventos = JSON.parse(cargaJSON);
+                            try{
+                                localStorage.setItem("eventosJSON", JSON.stringify(objetoEventos.vendedores));
+                                localStorage.removeItem("cargaJSON");
+                                console.log("Se han guardado los eventosJSON correctamente...");
+                                crearEventos();
+                            }catch(error){
+                                console.log(error);
+                                alert("Ha surgido un error al intentar guardar a los eventos, verifique la estructura del JSON. (Ver consola)");
+                            }
+                        }else{
+                            alert("Ha surgido un error al intentar guardar el JSON de eventos en el localStorage.");
+                        }
                     }else{
                         alert("Debe cargar empleados primero, para poder hacer la carga masiva de eventos.")
                     }
