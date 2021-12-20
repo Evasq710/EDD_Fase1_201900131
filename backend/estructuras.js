@@ -1,11 +1,100 @@
 'use strict'
 
+
+/**
+ * BINARIO DE PROVEEDORES
+ */
+ class NodoProveedor{
+     // proveedor objeto JSON
+    constructor(proveedor){
+        this.proveedor = proveedor;
+        this.dato = proveedor.id;
+        this.izquierdo = null;
+        this.derecho = null;
+    }
+}
+
+class AbbProveedor{
+    constructor(){
+        this.raiz = null;
+    }
+
+    insertarProveedor(proveedor){
+        let nuevo = new NodoProveedor(proveedor);
+
+        if (this.raiz == null){
+            this.raiz = nuevo;
+        } else {
+            this.raiz = this.insertarNodo(this.raiz, nuevo);
+        }
+    }
+
+    insertarNodo(raiz_actual, nuevo){
+        if(raiz_actual != null){
+            // Recorriendo los subárboles hijos hasta que termine de hacer la inserción, para retornar el raiz actual (this.raiz) con la inserción
+            if (nuevo.dato < raiz_actual.dato){
+                //Tomando el camino de la izquierda
+                raiz_actual.izquierdo = this.insertarNodo(raiz_actual.izquierdo, nuevo);
+            } else if (nuevo.dato > raiz_actual.dato){
+                //Tomando el camino de la derecha
+                raiz_actual.derecho = this.insertarNodo(raiz_actual.derecho, nuevo);
+            } else {
+                console.log(`No se insertó el proveedor con el id: ${nuevo.dato}, ya que ya existe`)
+            }
+
+            // Devuelve el this.raiz con el nuevo dato ya insertado
+            return raiz_actual;
+        } else {
+            //El hijo es nulo, por lo que metemos el nodo en él, luego de hacer los recorridos
+            raiz_actual = nuevo;
+            return raiz_actual;
+        }
+    }
+
+    generarDotProveedores(){
+        let cadena = "digraph arbol {\ngraph[label=\"Arbol binario Proveedores\"] node[shape=\"doublecircle\", style=\"filled\", fillcolor=\"palegreen\"]\n"
+        cadena += this.generarNodos(this.raiz);
+        cadena+="\n";
+        cadena+=this.enlazar(this.raiz);
+        cadena+="\n}";
+        console.log(cadena);
+    }
+
+    generarNodos(raiz_actual){
+        let nodos = "";
+        if(raiz_actual != null){
+            nodos += `n${raiz_actual.dato}[label=\"PROVEEDOR\\n${raiz_actual.dato} - ${raiz_actual.proveedor.nombre}\"];\n`
+            nodos += this.generarNodos(raiz_actual.izquierdo);
+            nodos += this.generarNodos(raiz_actual.derecho);
+        }
+        return nodos;
+    }
+
+    enlazar(raiz_actual){
+        let cadena="";
+        if(raiz_actual != null){
+            //Raiz actual padre       
+            if(raiz_actual.izquierdo != null){
+                cadena+= `n${raiz_actual.dato} -> n${raiz_actual.izquierdo.dato};\n`;
+            }
+            if(raiz_actual.derecho != null){
+                cadena+= `n${raiz_actual.dato} -> n${raiz_actual.derecho.dato};\n`;
+            }
+            cadena += this.enlazar(raiz_actual.izquierdo);
+            cadena += this.enlazar(raiz_actual.derecho);            
+        }
+        return cadena;
+    }
+}
+
+
 /**
  * AVL VENDEDORES, CON CLIENTES Y CALENDARIO POR VENDEDOR
  */
 
 class NodoVendedor{
     constructor(vendedor){
+        // vendedor objeto JSON
         this.vendedor = vendedor;
         this.dato = vendedor.id;
         this.izquierdo = null;
@@ -240,7 +329,7 @@ class Avl{
     generarNodos(raiz_actual){
         let nodos = "";
         if(raiz_actual != null){
-            nodos += `n${raiz_actual.dato}[label=\"${raiz_actual.dato} - ${raiz_actual.vendedor.nombre}\"];\n`
+            nodos += `n${raiz_actual.dato}[label=\"VENDEDOR\\n${raiz_actual.dato} - ${raiz_actual.vendedor.nombre}\"];\n`
             nodos += this.generarNodos(raiz_actual.izquierdo);
             nodos += this.generarNodos(raiz_actual.derecho);
         }
@@ -270,6 +359,7 @@ class Avl{
 
 class NodoDobleCliente{
     constructor(cliente){
+        // cliente objeto JSON
         this.cliente = cliente;
         this.siguiente = null;
         this.anterior = null;
@@ -380,7 +470,6 @@ class ListaDobleMeses{
         }
     }
 }
-
 
 /**
  * MATRIZ DINÁMICA DE EVENTOS
@@ -704,8 +793,9 @@ class Matriz{
 
 var avl_vendedores = new Avl();
 // TODO Binario proveedores
-var binario_proveedores = null;
+var binario_proveedores = new AbbProveedor();
 
+// ********** RECUPERANDO ESTRUCTURAS DEL STORAGE *************
 function recuperarAVL(){
     let avlString = localStorage.getItem("vendedores");
     if(avlString != null){
@@ -747,6 +837,36 @@ function recuperacionAnidadainOrder(raiz_actual){
     }
 }
 
+function recuperarABB(){
+    let abbString = localStorage.getItem("proveedores");
+    if(abbString != null){
+        let abbJSON = JSON.parse(abbString);
+        let abbCircularJSON = CircularJSON.parse(abbJSON); 
+        Object.assign(binario_proveedores, abbCircularJSON);
+    }
+}
+
+// *********** INSERCIÓN DE DATOS A ESTRUCTURAS ***********
+
+function crearProveedores(){
+    let strProveedores = localStorage.getItem("proveedoresJSON");
+    if(strProveedores != null){
+        let arrProveedores = JSON.parse(strProveedores);
+        
+        arrProveedores.forEach(proveedorNuevo => {
+            try{
+                binario_proveedores.insertarProveedor(proveedorNuevo);
+            }catch(error){
+                console.log(error);
+                // alert("Ocurrió un error al insertar proveedores nuevos al árbol binario. (Ver consola).")
+            }
+        });
+        localStorage.removeItem("proveedoresJSON");
+        actualizarProveedoresStorage();
+        alert("Se han agregado a los proveedores correctamente. Ver consola para más detalles.")
+    }
+}
+
 function crearVendedores(){
     let strVendedores = localStorage.getItem("vendedoresJSON");
     if(strVendedores != null){
@@ -757,7 +877,7 @@ function crearVendedores(){
                 avl_vendedores.insertarVendedor(vendedorNuevo);
             }catch(error){
                 console.log(error);
-                alert("Ocurrió un error al insertar vendedores nuevos al árbol AVL. (Ver consola).")
+                // alert("Ocurrió un error al insertar vendedores nuevos al árbol AVL. (Ver consola).")
             }
         });
         localStorage.removeItem("vendedoresJSON");
@@ -817,7 +937,15 @@ function actualizarVendedoresStorage(){
     localStorage.setItem("vendedores", avlString);
 }
 
+function actualizarProveedoresStorage(){
+    let abb_CircularJSON = CircularJSON.stringify(binario_proveedores);
+    let abbProveedoresString = JSON.stringify(abb_CircularJSON);
+    localStorage.setItem("proveedores", abbProveedoresString);
+}
+
 function prueba(){
+    console.log("**************DOT PROVEEDORES****************");
+    binario_proveedores.generarDotProveedores();
     console.log("**************DOT VENDEDORES****************");
     avl_vendedores.generarDotVendedores();
     console.log("**************DETALLE CLIENTES****************");

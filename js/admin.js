@@ -41,16 +41,22 @@ function registrarUsuario(){
         let inputPass = document.getElementById('passEmpleado');
 
         if((inputId.value != "") && (inputUser.value != "") && (inputNombre.value != "") && (inputEdad.value != "") && (inputCorreo.value != "") && (inputPass.value != "")){
-            let nuevoEmpleado = {
+            let nuevoEmpleado = [{
                 'id': parseInt(inputId.value),
                 'username': inputUser.value,
                 'nombre': inputNombre.value,
                 'edad': parseInt(inputEdad.value),
                 'correo': inputCorreo.value,
                 'password': inputPass.value
+            }]
+            try{
+                localStorage.setItem("vendedoresJSON", JSON.stringify(nuevoEmpleado));
+                console.log("Se ha guardado vendedoresJSON correctamente...");
+                crearVendedores();
+            }catch(error){
+                console.log(error);
+                alert("Ha surgido un error al intentar guardar al vendedor, verifique la estructura del JSON. (Ver consola)");
             }
-            console.log(nuevoEmpleado);
-            // TODO REGISTRO
         } else {
             alert("Campos vacíos, todos los campos son obligatorios.");
         }
@@ -61,14 +67,22 @@ function registrarUsuario(){
         let inputCorreo = document.getElementById('correoCliente');
 
         if((inputIdVendedor.value != "") && (inputId.value != "") && (inputNombre.value != "") && (inputCorreo.value != "")){
-            let nuevoCliente = {
-                'idVendedor': parseInt(inputIdVendedor.value),
-                'id': parseInt(inputId.value),
-                'nombre': inputNombre.value,
-                'correo': inputCorreo.value
+            let nuevoCliente = [{
+                'id': parseInt(inputIdVendedor.value),
+                'clientes' : [{
+                    'id': parseInt(inputId.value),
+                    'nombre': inputNombre.value,
+                    'correo': inputCorreo.value
+                }]
+            }]
+            try{
+                localStorage.setItem("clientesJSON", JSON.stringify(nuevoCliente));
+                console.log("Se ha guardado clientesJSON correctamente...");
+                crearClientes();
+            }catch(error){
+                console.log(error);
+                alert("Ha surgido un error al intentar guardar al cliente, verifique la estructura del JSON. (Ver consola)");
             }
-            console.log(nuevoCliente);
-            // TODO REGISTRO
         } else {
             alert("Campos vacíos, todos los campos son obligatorios.");
         }
@@ -80,15 +94,21 @@ function registrarUsuario(){
         let inputCorreo = document.getElementById('correoProveedor');
 
         if((inputId.value != "") && (inputNombre.value != "") && (inputDireccion.value != "") && (inputTelefono.value != "") && (inputCorreo.value != "")){
-            let nuevoProveedor = {
+            let nuevoProveedor = [{
                 'id': parseInt(inputId.value),
                 'nombre': inputNombre.value,
                 'direccion': inputDireccion.value,
                 'telefono': parseInt(inputTelefono.value),
                 'correo': inputCorreo.value
+            }]
+            try{
+                localStorage.setItem("proveedoresJSON", JSON.stringify(nuevoProveedor));
+                console.log("Se ha guardado proveedoresJSON correctamente...");
+                crearProveedores();
+            }catch(error){
+                console.log(error);
+                alert("Ha surgido un error al intentar guardar al proveedor, verifique la estructura del JSON. (Ver consola)");
             }
-            console.log(nuevoProveedor);
-            // TODO REGISTRO
         } else {
             alert("Campos vacíos, todos los campos son obligatorios.");
         }
@@ -161,7 +181,21 @@ function cargaMasiva(){
                         alert("Debe cargar empleados primero, para poder hacer la carga masiva de clientes.")
                     }
                 } else if(radioCargaProveedores.checked){
-
+                    let cargaJSON = localStorage.getItem("cargaJSON");
+                    if(cargaJSON != null){
+                        let objetoProveedores = JSON.parse(cargaJSON);
+                        try{
+                            localStorage.setItem("proveedoresJSON", JSON.stringify(objetoProveedores.proveedores));
+                            localStorage.removeItem("cargaJSON");
+                            console.log("Se han guardado los proveedoresJSON correctamente...");
+                            crearProveedores();
+                        }catch(error){
+                            console.log(error);
+                            alert("Ha surgido un error al intentar guardar a los proveedores, verifique la estructura del JSON. (Ver consola)");
+                        }
+                    }else{
+                        alert("Ha surgido un error al intentar guardar el JSON de proveedores en el localStorage.");
+                    }
                 } else if(radioCargaEventos.checked){
                     if(avl_vendedores.raiz != null){
                         let cargaJSON = localStorage.getItem("cargaJSON");
