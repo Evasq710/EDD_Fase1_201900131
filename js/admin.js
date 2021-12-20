@@ -142,7 +142,21 @@ function cargaMasiva(){
                     }
                 } else if(radioCargaClientes.checked){
                     if(avl_vendedores.raiz != null){
-                        
+                        let cargaJSON = localStorage.getItem("cargaJSON");
+                        if(cargaJSON != null){
+                            let objetoClientes = JSON.parse(cargaJSON);
+                            try{
+                                localStorage.setItem("clientesJSON", JSON.stringify(objetoClientes.vendedores));
+                                localStorage.removeItem("cargaJSON");
+                                console.log("Se han guardado los clientesJSON correctamente...");
+                                crearClientes();
+                            }catch(error){
+                                console.log(error);
+                                alert("Ha surgido un error al intentar guardar a los clientes, verifique la estructura del JSON. (Ver consola)");
+                            }
+                        }else{
+                            alert("Ha surgido un error al intentar guardar el JSON de clientes en el localStorage.");
+                        }
                     }else{
                         alert("Debe cargar empleados primero, para poder hacer la carga masiva de clientes.")
                     }

@@ -50,6 +50,28 @@ class Avl{
         }
     }
 
+    booleanCredencialesVendedor(username, password){
+        return this.verificacionCredenciales(this.raiz, username, password);
+    }
+
+    verificacionCredenciales(raiz_actual, username, password){
+        if(raiz_actual != null){
+            if(username == raiz_actual.vendedor.username && password == raiz_actual.vendedor.password){
+                return true;
+            }
+            let encontrado = this.verificacionCredenciales(raiz_actual.izquierdo, username, password);
+            if(encontrado == true){
+                return true;
+            }
+            encontrado = this.verificacionCredenciales(raiz_actual.derecho, username, password);
+            if(encontrado == true){
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
+
     insertarNodo(raiz_actual, nuevo){
         if(raiz_actual != null){
             // Recorriendo los subárboles hijos hasta que termine de hacer la inserción, para retornar el raiz actual (this.raiz) con la inserción
@@ -165,6 +187,15 @@ class Avl{
         nodo = this.rotacionSimpleIzquierda(nodo)
 
         return nodo;
+    }
+
+    inOrderClientes(raiz_actual){
+        if(raiz_actual != null){
+            this.inOrderClientes(raiz_actual.izquierdo);
+            console.log(`======${raiz_actual.dato} - ${raiz_actual.vendedor.nombre}======`)
+            raiz_actual.listaClientes.mostrarClientes()
+            this.inOrderClientes(raiz_actual.derecho);
+        }
     }
 
     generarDotVendedores(){
@@ -632,14 +663,27 @@ function recuperarAVL(){
         let avl_JSON = JSON.parse(avlString);
         let avlCircularJSON = CircularJSON.parse(avl_JSON); 
         Object.assign(avl_vendedores, avlCircularJSON);
-        // let aux = avl_vendedores.primero;
-        // while(aux!= null){
-        //     var temp = aux.lista;
-        //     var lista_anidada = new lista_doble();
-        //     Object.assign(lista_anidada,temp);
-        //     aux.lista = lista_anidada;
-        //     aux = aux.siguiente;
-        // }
+        recuperacionAnidadainOrder(avl_vendedores.raiz);
+    }
+}
+
+function recuperacionAnidadainOrder(raiz_actual){
+    if(raiz_actual != null){
+        recuperacionAnidadainOrder(raiz_actual.izquierdo);
+
+        let listaSerializadaClientes = raiz_actual.listaClientes;
+        let listaAnidadaClientes = new ListaDobleClientes();
+        Object.assign(listaAnidadaClientes,listaSerializadaClientes);
+        raiz_actual.listaClientes = listaAnidadaClientes;
+
+        let listaSerializadaMeses = raiz_actual.calendario;
+        let listaAnidadaMeses = new ListaDobleMeses();
+        Object.assign(listaAnidadaMeses,listaSerializadaMeses);
+        raiz_actual.calendario = listaAnidadaMeses;
+
+        //TODO Verificar EDD anidadas en CALENDARIO
+
+        recuperacionAnidadainOrder(raiz_actual.derecho);
     }
 }
 
@@ -657,14 +701,42 @@ function crearVendedores(){
             }
         });
         localStorage.removeItem("vendedoresJSON");
-
-        let avl_circularJSON = CircularJSON.stringify(avl_vendedores);
-        let avlString = JSON.stringify(avl_circularJSON);
-        localStorage.setItem("vendedores", avlString);
+        actualizarVendedoresStorage();
         alert("Se han agregado a los vendedores correctamente. Ver consola para más detalles.")
     }
 }
 
+function crearClientes(){
+    let strClientes = localStorage.getItem("clientesJSON");
+    if(strClientes != null){
+        let arrVendedores = JSON.parse(strClientes);
+        
+        arrVendedores.forEach(vendedor => {
+            vendedor.clientes.forEach(cliente => {
+                try{
+                    //Insertando a los clientes en la lista doble
+                    // TODO llevar control de los que devuelven false
+                    let insertado = avl_vendedores.insertarCliente(vendedor.id, cliente);
+                }catch(error){
+                    // TODO Llevar el control de los que generen error
+                    console.log(error);
+                }
+            });
+        });
+        localStorage.removeItem("clientesJSON");
+        actualizarVendedoresStorage();
+        alert("Se han agregado a los clientes correctamente. Ver consola para más detalles.")
+    }
+}
+
+function actualizarVendedoresStorage(){
+    let avl_circularJSON = CircularJSON.stringify(avl_vendedores);
+    let avlString = JSON.stringify(avl_circularJSON);
+    localStorage.setItem("vendedores", avlString);
+}
+
 function prueba(){
     avl_vendedores.generarDotVendedores();
+    console.log("******************************");
+    avl_vendedores.inOrderClientes(avl_vendedores.raiz);
 }

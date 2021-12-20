@@ -19,8 +19,17 @@ function inicioSesion(){
             } else {
                 alert("Credenciales incorrectas! Verifique su Username y Contraseña.");
             }
-        } else if(true){
-            alert("hola");
+        } else {
+            if(avl_vendedores.raiz != null){
+                let credencialesOk = avl_vendedores.booleanCredencialesVendedor(usuario['username'], usuario['password']);
+                if(credencialesOk){
+                    location.href = "./views/vendedor.html"
+                }else{
+                    alert("Credenciales incorrectas! Verifique su Username y Contraseña.");
+                }
+            }else{
+                alert("No se ha encontrado al usuario! Verifique su Username y Contraseña.");
+            }
         }
     }else{
         alert("Ingrese sus credenciales para iniciar sesión.");
