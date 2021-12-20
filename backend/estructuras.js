@@ -1,7 +1,5 @@
 'use strict'
 
-// TODO Definir objetos de los nodos, o si se les pasaran JSON
-
 /**
  * AVL VENDEDORES, CON CLIENTES Y CALENDARIO POR VENDEDOR
  */
@@ -170,7 +168,7 @@ class Avl{
     }
 
     generarDotVendedores(){
-        let cadena = "digraph arbol {\ngraph[label=\"Arbol AVL Vendedores\"] node[style=\"filled\", fillcolor=\"palegoldenrod\"]\n"
+        let cadena = "digraph arbol {\ngraph[label=\"Arbol AVL Vendedores\"] node[shape=\"doubleoctagon\", style=\"filled\", fillcolor=\"cadetblue\"]\n"
         cadena += this.generarNodos(this.raiz);
         cadena+="\n";
         cadena+=this.enlazar(this.raiz);
@@ -181,7 +179,7 @@ class Avl{
     generarNodos(raiz_actual){
         let nodos = "";
         if(raiz_actual != null){
-            nodos += `n${raiz_actual.dato}[label=\"${raiz_actual.dato} ${raiz_actual.vendedor.nombre}\"];\n`
+            nodos += `n${raiz_actual.dato}[label=\"${raiz_actual.dato} - ${raiz_actual.vendedor.nombre}\"];\n`
             nodos += this.generarNodos(raiz_actual.izquierdo);
             nodos += this.generarNodos(raiz_actual.derecho);
         }
@@ -620,4 +618,53 @@ class Matriz{
         cadena+= "\n}"
         console.log(cadena);
     }
+}
+
+//***************************************************************************************** */
+
+var avl_vendedores = new Avl();
+// TODO Binario proveedores
+var binario_proveedores = null;
+
+function recuperarAVL(){
+    let avlString = localStorage.getItem("vendedores");
+    if(avlString != null){
+        let avl_JSON = JSON.parse(avlString);
+        let avlCircularJSON = CircularJSON.parse(avl_JSON); 
+        Object.assign(avl_vendedores, avlCircularJSON);
+        // let aux = avl_vendedores.primero;
+        // while(aux!= null){
+        //     var temp = aux.lista;
+        //     var lista_anidada = new lista_doble();
+        //     Object.assign(lista_anidada,temp);
+        //     aux.lista = lista_anidada;
+        //     aux = aux.siguiente;
+        // }
+    }
+}
+
+function crearVendedores(){
+    let strVendedores = localStorage.getItem("vendedoresJSON");
+    if(strVendedores != null){
+        let arrVendedores = JSON.parse(strVendedores);
+        
+        arrVendedores.forEach(vendedorNuevo => {
+            try{
+                avl_vendedores.insertarVendedor(vendedorNuevo);
+            }catch(error){
+                console.log(error);
+                alert("Ocurrió un error al insertar vendedores nuevos al árbol AVL. (Ver consola).")
+            }
+        });
+        localStorage.removeItem("vendedoresJSON");
+
+        let avl_circularJSON = CircularJSON.stringify(avl_vendedores);
+        let avlString = JSON.stringify(avl_circularJSON);
+        localStorage.setItem("vendedores", avlString);
+        alert("Se han agregado a los vendedores correctamente. Ver consola para más detalles.")
+    }
+}
+
+function prueba(){
+    avl_vendedores.generarDotVendedores();
 }

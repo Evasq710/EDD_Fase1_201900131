@@ -13,7 +13,7 @@
 
     <title>ERPS Admin</title>
 </head>
-<body>
+<body onload="recuperarAVL()">
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
@@ -205,7 +205,8 @@
                           </div>
                         </div>
   
-                        <button type="submit" class="btn btn-primary" id="submitCarga" onclick="cargaMasiva()">REALIZAR CARGA MASIVA</button>
+                        <button type="submit" class="btn btn-primary" id="submitCarga" onclick="cargaMasiva();">REALIZAR CARGA MASIVA</button>
+                        <button type="button" onclick="prueba()">PRUEBAS</button>
                         
                       </fieldset>
                     </form>
@@ -213,15 +214,52 @@
             </div>
 
             <div class="tab-pane fade" id="reportes">
-                <div class="inner-container">
-                    <p>REPORTES</p>
-                </div>
+              <div class="inner-container">
+                <form>
+                    <fieldset>
+                      <fieldset class="form-group">
+                        <h3>Reporte que desea generar</h3>
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteEmpleados" value="vendedores" checked=""/>
+                            Usuarios (Vendedores)
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteClientes" value="clientes"/>
+                            Reporte clientes de vendedor
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteCalendario" value="calendario"/>
+                            Calendario de vendedor
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteProveedores" value="proveedores"/>
+                            Proveedores
+                          </label>
+                        </div>
+                      </fieldset>
+                      
+                      
+
+                      <button type="submit" class="btn btn-primary" id="submitReporte" onclick="">GENERAR REPORTE</button>
+                      
+                    </fieldset>
+                  </form>
+              </div>
             </div>
           </div>
 
     </div>
 
     <script src="../js/admin.js"></script>
+    <script src="../backend/circular-json.js"></script>
+    <script src="../backend/estructuras.js"></script>
 
 </body>
 </html>

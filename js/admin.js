@@ -107,26 +107,54 @@ submitCarga.addEventListener('click', function(event){
     event.preventDefault();
 });
 
+//Se maneja por aparte el inputFile ya que el FileReader es asíncrono, y necesitamos sincronía para la ejecución de múltiples funciones
+var inputFile = document.getElementById('fileCarga');
+inputFile.addEventListener('change', function(e){
+    const reader = new FileReader();
+    reader.onload = function(){
+        localStorage.setItem("cargaJSON", reader.result);
+    };
+    if(typeof inputFile.files[0] !== 'undefined' && inputFile.files[0].name.split('.')[1] == 'json'){
+        reader.readAsText(inputFile.files[0], 'UTF-8');
+    }
+}, false);
+
+
 function cargaMasiva(){
-    let inputFile = document.getElementById('fileCarga').files[0];
-    if(typeof inputFile !== 'undefined'){
-        if(inputFile.name.split('.')[1] == 'json'){
+    if(typeof inputFile.files[0] !== 'undefined'){
+        if(inputFile.files[0].name.split('.')[1] == 'json'){
             try{
-                const reader = new FileReader();
-                reader.addEventListener('load', (event) => {
-                    console.log(event.target.result);
-                    // TODO CARGA MASIVA
-                    if(radioCargaEmpleados.checked){
-                        
-                    } else if(radioCargaClientes.checked){
-
-                    } else if(radioCargaProveedores.checked){
-
-                    } else if(radioCargaEventos.checked){
-
+                if(radioCargaEmpleados.checked){
+                    let cargaJSON = localStorage.getItem("cargaJSON");
+                    if(cargaJSON != null){
+                        let objetoVendedores = JSON.parse(cargaJSON);
+                        try{
+                            localStorage.setItem("vendedoresJSON", JSON.stringify(objetoVendedores.vendedores));
+                            localStorage.removeItem("cargaJSON");
+                            console.log("Se han guardado los vendedoresJSON correctamente...");
+                            crearVendedores();
+                        }catch(error){
+                            console.log(error);
+                            alert("Ha surgido un error al intentar guardar a los vendedores, verifique la estructura del JSON. (Ver consola)");
+                        }
+                    }else{
+                        alert("Ha surgido un error al intentar guardar el JSON de vendedores en el localStorage.");
                     }
-                });
-                reader.readAsText(inputFile, 'UTF-8');
+                } else if(radioCargaClientes.checked){
+                    if(avl_vendedores.raiz != null){
+                        
+                    }else{
+                        alert("Debe cargar empleados primero, para poder hacer la carga masiva de clientes.")
+                    }
+                } else if(radioCargaProveedores.checked){
+
+                } else if(radioCargaEventos.checked){
+                    if(avl_vendedores.raiz != null){
+
+                    }else{
+                        alert("Debe cargar empleados primero, para poder hacer la carga masiva de eventos.")
+                    }
+                }
             }catch(error){
                 console.log(error);
                 alert("No ha sido posible realizar la carga masiva (Ver consola).");
