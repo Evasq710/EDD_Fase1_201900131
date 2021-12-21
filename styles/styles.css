@@ -3,6 +3,10 @@
     padding: 0;
   }
 
+body {
+    background: rgb(223, 223, 226);
+}
+
 h1 {
     font-size: 4em;
     text-align: center;
@@ -25,6 +29,7 @@ h2 {
 
 .inner-container {
     padding: 3% 5%;
+    background: white;
 }
 
 .container-reporte {
@@ -37,4 +42,8 @@ h2 {
 
 .form-check {
     margin: 2% 0 2%;
+}
+
+.container-btn {
+    text-align: center;
 }

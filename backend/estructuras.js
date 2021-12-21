@@ -385,6 +385,28 @@ class Avl{
             return null;
         }
     }
+
+    obtenerVendedorJSON(user){
+        return this.obtenerVendedor(this.raiz, user);
+    }
+
+    obtenerVendedor(raiz_actual, user){
+        if(raiz_actual != null){
+            if(user == raiz_actual.vendedor.username){
+                return raiz_actual.vendedor;
+            }
+            let vendedor = this.obtenerVendedor(raiz_actual.izquierdo, user);
+            if(vendedor != null){
+                return vendedor;
+            }
+            vendedor = this.obtenerVendedor(raiz_actual.derecho, user);
+            if(vendedor != null){
+                return vendedor;
+            }
+        }else{
+            return null;
+        }
+    }
 }
 
 /**

@@ -23,6 +23,7 @@ function inicioSesion(){
             if(avl_vendedores.raiz != null){
                 let credencialesOk = avl_vendedores.booleanCredencialesVendedor(usuario['username'], usuario['password']);
                 if(credencialesOk){
+                    localStorage.setItem("userVendedor", usuario['username']);
                     location.href = "./views/vendedor.html"
                 }else{
                     alert("Credenciales incorrectas! Verifique su Username y Contraseña.");
