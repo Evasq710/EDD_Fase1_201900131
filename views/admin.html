@@ -11,6 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <!-- Librería Vist para grafico de reportes -->
+    <script type="text/javascript" src="../js/vis-network.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/vis-network.min.css"/>
+
     <title>ERPS Admin</title>
 </head>
 <body onload="recuperarAVL(); recuperarABB();">
@@ -206,7 +210,7 @@
                         </div>
   
                         <button type="submit" class="btn btn-primary" id="submitCarga" onclick="cargaMasiva();">REALIZAR CARGA MASIVA</button>
-                        <button type="button" onclick="prueba()">PRUEBAS</button>
+                        <button type="button" onclick="prueba()" style="display: none;">PRUEBAS</button>
                         
                       </fieldset>
                     </form>
@@ -221,43 +225,82 @@
                         <h3>Reporte que desea generar</h3>
                         <div class="form-check">
                           <label class="form-check-label">
-                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteEmpleados" value="vendedores" checked=""/>
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteEmpleados" value="vendedores" checked="" onclick="datosAdicionales();"/>
                             Usuarios (Vendedores)
                           </label>
                         </div>
                         <div class="form-check">
                           <label class="form-check-label">
-                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteClientes" value="clientes"/>
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteClientes" value="clientes" onclick="datosAdicionales();"/>
                             Reporte clientes de vendedor
                           </label>
                         </div>
                         <div class="form-check">
                           <label class="form-check-label">
-                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteCalendario" value="calendario"/>
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteCalendario" value="calendario" onclick="datosAdicionales();"/>
                             Calendario de vendedor
                           </label>
                         </div>
                         <div class="form-check">
                           <label class="form-check-label">
-                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteProveedores" value="proveedores"/>
+                            <input type="radio" class="form-check-input" name="opcionesReportes" id="reporteProveedores" value="proveedores" onclick="datosAdicionales();"/>
                             Proveedores
                           </label>
                         </div>
                       </fieldset>
-                      
-                      
 
-                      <button type="submit" class="btn btn-primary" id="submitReporte" onclick="">GENERAR REPORTE</button>
+                      <div class="form-group" id="datosReporteClientes" style="display: none;">
+                        <label class="form-label mt-4">Datos para generar reporte de clientes</label>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="idVendedorReporteClientes" placeholder="ID">
+                          <label for="idVendedorReporteClientes">ID Vendedor</label>
+                        </div>
+                      </div>
+
+                      <div class="form-group" id="datosReporteCalendario" style="display: none;">
+                        <label class="form-label mt-4">Datos para generar calendario de eventos de vendedor</label>
+                        <div class="form-floating mb-3">
+                          <input type="number" class="form-control" id="idVendedorReporteCalendario" placeholder="ID">
+                          <label for="idVendedorReporteCalendario">ID Vendedor</label>
+                        </div>
+                        <div class="form-group">
+                          <label for="mesReporteCalendario" class="form-label mt-4">Mes del reporte de eventos</label>
+                          <select class="form-select" id="mesReporteCalendario">
+                            <option value="1">1 - Enero</option>
+                            <option value="2">2 - Febrero</option>
+                            <option value="3">3 - Marzo</option>
+                            <option value="4">4 - Abril</option>
+                            <option value="5">5 - Mayo</option>
+                            <option value="6">6 - Junio</option>
+                            <option value="7">7 - Julio</option>
+                            <option value="8">8 - Agosto</option>
+                            <option value="9">9 - Septiembre</option>
+                            <option value="10">10 - Octubre</option>
+                            <option value="11">11 - Noviembre</option>
+                            <option value="12">12 - Diciembre</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <button type="button" class="btn btn-primary mt-4" id="submitReporte" onclick="generarGrafo()">GENERAR REPORTE</button>
                       
                     </fieldset>
                   </form>
               </div>
+              
+              <div class="container-reporte" id="grafo"></div>
+              <div class="inner-container">
+                <label for="textDot" class="form-label mt-4">Código DOT del grafo</label>
+                <textarea class="form-control" id="textDot" rows="20" readonly></textarea>
+              </div>
+
             </div>
           </div>
 
     </div>
 
     <script src="../js/admin.js"></script>
+    <script src="../js/reportes.js"></script>
     <script src="../backend/circular-json.js"></script>
     <script src="../backend/estructuras.js"></script>
 

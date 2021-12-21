@@ -27,6 +27,14 @@ h2 {
     padding: 3% 5%;
 }
 
+.container-reporte {
+    margin: 0px auto;
+    border: 1px solid lightgray;
+    width: 80%;
+    height: 600px;
+    text-align: center;
+}
+
 .form-check {
     margin: 2% 0 2%;
 }

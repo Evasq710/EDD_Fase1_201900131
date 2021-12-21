@@ -57,13 +57,13 @@ class AbbProveedor{
         cadena+="\n";
         cadena+=this.enlazar(this.raiz);
         cadena+="\n}";
-        console.log(cadena);
+        return cadena;
     }
 
     generarNodos(raiz_actual){
         let nodos = "";
         if(raiz_actual != null){
-            nodos += `n${raiz_actual.dato}[label=\"PROVEEDOR\\n${raiz_actual.dato} - ${raiz_actual.proveedor.nombre}\"];\n`
+            nodos += `n${raiz_actual.dato}[label=\"PROVEEDOR\\n[ID ${raiz_actual.dato}] ${raiz_actual.proveedor.nombre}\\nTel. ${raiz_actual.proveedor.telefono}\"];\n`
             nodos += this.generarNodos(raiz_actual.izquierdo);
             nodos += this.generarNodos(raiz_actual.derecho);
         }
@@ -317,19 +317,19 @@ class Avl{
         }
     }
 
-    generarDotVendedores(){
+    obtenerDotVendedores(){
         let cadena = "digraph arbol {\ngraph[label=\"Arbol AVL Vendedores\"] node[shape=\"doubleoctagon\", style=\"filled\", fillcolor=\"cadetblue\"]\n"
         cadena += this.generarNodos(this.raiz);
         cadena+="\n";
         cadena+=this.enlazar(this.raiz);
         cadena+="\n}";
-        console.log(cadena);
+        return cadena;
     }
 
     generarNodos(raiz_actual){
         let nodos = "";
         if(raiz_actual != null){
-            nodos += `n${raiz_actual.dato}[label=\"VENDEDOR\\n${raiz_actual.dato} - ${raiz_actual.vendedor.nombre}\"];\n`
+            nodos += `n${raiz_actual.dato}[label=\"VENDEDOR\\n[ID ${raiz_actual.dato}] ${raiz_actual.vendedor.nombre}\\nEmail: ${raiz_actual.vendedor.correo}\"];\n`
             nodos += this.generarNodos(raiz_actual.izquierdo);
             nodos += this.generarNodos(raiz_actual.derecho);
         }
@@ -350,6 +350,40 @@ class Avl{
             cadena += this.enlazar(raiz_actual.derecho);            
         }
         return cadena;
+    }
+
+    obtenerDotClientesDeVendedor(raizActual, idVendedor){
+        if(raizActual != null){
+            if (idVendedor == raizActual.dato){
+                let dotClientes = raizActual.listaClientes.obtenerDotClientes(raizActual.vendedor.nombre, raizActual.dato);
+                return dotClientes;
+            }else if(idVendedor < raizActual.dato){
+                return this.obtenerDotClientesDeVendedor(raizActual.izquierdo, idVendedor);
+            }else{
+                return this.obtenerDotClientesDeVendedor(raizActual.derecho, idVendedor);
+            }
+        }else{
+            console.log(`No se encontró el vendedor con el id ${idVendedor}. No se pudo retornar la lista de clientes.`);
+            return null;
+        }
+    }
+
+    obtenerDotEventosDeVendedor(raizActual, idVendedor, mes){
+        if(raizActual != null){
+            if (idVendedor == raizActual.dato){
+                let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+                let dotMatriz = raizActual.calendario.generarMatrizDeMes(mes, meses[mes - 1], raizActual.vendedor.nombre, raizActual.dato);
+                return dotMatriz;
+            }else if(idVendedor < raizActual.dato){
+                return this.obtenerDotEventosDeVendedor(raizActual.izquierdo, idVendedor, mes);
+            }else{
+                return this.obtenerDotEventosDeVendedor(raizActual.derecho, idVendedor, mes);
+            }
+        }else{
+            console.log(`No se encontró el vendedor con el id ${idVendedor}. No se pudo retornar la matriz de eventos.`);
+            return null;
+        }
     }
 }
 
@@ -392,6 +426,27 @@ class ListaDobleClientes{
             console.log(`-> ${actual.cliente.id} - ${actual.cliente.nombre}`);
             actual = actual.siguiente;
         }
+    }
+
+    obtenerDotClientes(nombreVendedor, idVendedor){
+        let cadena = `digraph listaEnlazada {
+            rankdir = "LR"
+        graph[label=\"Lista Doble Clientes\\nVendedor ${nombreVendedor} [ID ${idVendedor}]\"] node[shape="rectangle", style="filled", fillcolor="darksalmon"];\n`
+        let actual = this.primero;
+        // Creando los nodos
+        while(actual != null){
+            cadena += `n${actual.cliente.id}[label=\"CLIENTE\\n[ID ${actual.cliente.id}] ${actual.cliente.nombre}\\nCorreo: ${actual.cliente.correo}\"];\n`
+            actual = actual.siguiente;
+        }
+        // Enlaces dobles
+        actual = this.primero;
+        while(actual != null && actual.siguiente != null){
+            cadena += `n${actual.cliente.id} -> n${actual.siguiente.cliente.id};\n`
+            cadena += `n${actual.siguiente.cliente.id} -> n${actual.cliente.id};\n`
+            actual = actual.siguiente;
+        }
+        cadena += "\n}"
+        return cadena;
     }
 }
 
@@ -465,9 +520,21 @@ class ListaDobleMeses{
         console.log("*** Meses Y eventos De Empleado **")
         while(actual != null){
             console.log(`-----> ${actual.mes}`);
-            actual.matrizEventos.generarDotMatrizEventos();
+            console.log(actual.matrizEventos.generarDotMatrizEventos());
             actual = actual.siguiente;
         }
+    }
+
+    generarMatrizDeMes(mes, nombreMes, nombreVendedor, idVendedor){
+        let actual = this.primero;
+        while(actual != null){
+            if(actual.mes == mes){
+                let dotEventos = actual.matrizEventos.generarDotMatrizEventos(nombreMes, nombreVendedor, idVendedor);
+                return dotEventos;
+            }
+            actual = actual.siguiente;
+        }
+        return null;
     }
 }
 
@@ -696,21 +763,21 @@ class Matriz{
         }
     }
 
-    generarDotMatrizEventos(){
+    generarDotMatrizEventos(nombreMes, nombreVendedor, idVendedor){
         let cadena = "digraph Matriz{\nlayout = neato;\n";
-        cadena+= "node[shape = box,width=0.7,height=0.7,fillcolor=\"azure2\" color=\"white\" style=\"filled\"];\n";
+        cadena+= "node[shape = box,width=0.7,height=0.7, style=\"filled\"];\n";
         cadena+= "edge[style = \"bold\"]; \n"
         // Nodo matriz
         // pos = (dia, hora) = (x, y) IV Cuadrante
         //Al empezar en (0, 0), solo se grafican correctamente valores de 1 en adelante, tanto en M como en N
         //Si se quiere que los valores admitidos sean de 0 en adelante, cambiar el inicio a -1, 1, y las cabeceras en base a esto
-        cadena+="node[label = \"Calendario\", fillcolor=\"darkolivegreen1\", pos = \"0,0!\"]principal;\n"
+        cadena+=`node[label = \"Calendario ${nombreMes}\\n[ID ${idVendedor}] ${nombreVendedor}\", fillcolor=\"cadetblue\", pos = \"0,0!\"]principal;\n`
 
         //***************************************CABECERAS******************************************
         // Cabeceras N para columnas(SUPERIORES, INSERTADAS EN M = 0)
         let actualN = this.cabecerasN.primero;
         while(actualN!=null){
-            cadena+= "node[label = "+actualN.posicion+" fillcolor=\" azure1\" pos = \""+actualN.posicion+",0!\"]dia"+actualN.posicion+";\n"
+            cadena+= "node[label = \""+"Día "+actualN.posicion+"\" fillcolor=\"darkseagreen\" pos = \""+actualN.posicion+",0!\"]dia"+actualN.posicion+";\n"
             actualN = actualN.siguiente;
         }
         // Enlaces dobles en las cabeceras de las columnas
@@ -728,7 +795,7 @@ class Matriz{
         // Cabeceras M para filas (IZQUIERDA, INSERTADAS EN N = 0)
         let actualM = this.cabecerasM.primero;
         while(actualM!=null){
-            cadena+="node[label = "+actualM.posicion+" fillcolor=\" azure1\" pos = \"0,-"+actualM.posicion+"!\"]hora"+actualM.posicion+";\n"
+            cadena+="node[label = \""+"Hora "+actualM.posicion+"\" fillcolor=\"darkseagreen\" pos = \"0,-"+actualM.posicion+"!\"]hora"+actualM.posicion+";\n"
             actualM = actualM.siguiente;
         }
         // Enlaces dobles en las cabeceras de las filas
@@ -749,7 +816,7 @@ class Matriz{
         while(actualN != null){
             let actualInterno = actualN.listaInterna.primero;
             while(actualInterno!=null){
-                cadena+="\tnode[label = \""+actualInterno.descripcion+"\" fillcolor=\" gold2\" pos = \""+actualInterno.dia+",-"+actualInterno.hora+"!\"]dia"+actualInterno.dia+"hora"+actualInterno.hora+";\n"
+                cadena+="\tnode[label = \""+actualInterno.descripcion+"\" fillcolor=\"gold\" pos = \""+actualInterno.dia+",-"+actualInterno.hora+"!\"]dia"+actualInterno.dia+"hora"+actualInterno.hora+";\n"
                 actualInterno = actualInterno.abajo;
             }
 
@@ -785,7 +852,7 @@ class Matriz{
         }
 
         cadena+= "\n}"
-        console.log(cadena);
+        return cadena;
     }
 }
 
@@ -931,6 +998,8 @@ function crearEventos(){
     }
 }
 
+// *********** ACTUALIZACIÓN STORAGE CUANDO LAS ESTRUCTURAS CAMBIAN ***********
+
 function actualizarVendedoresStorage(){
     let avl_circularJSON = CircularJSON.stringify(avl_vendedores);
     let avlString = JSON.stringify(avl_circularJSON);
@@ -943,13 +1012,13 @@ function actualizarProveedoresStorage(){
     localStorage.setItem("proveedores", abbProveedoresString);
 }
 
+// *********** PRUEBAS PERMANENCIA DE DATOS ***********
+
 function prueba(){
     console.log("**************DOT PROVEEDORES****************");
-    binario_proveedores.generarDotProveedores();
+    console.log(binario_proveedores.generarDotProveedores());
     console.log("**************DOT VENDEDORES****************");
-    avl_vendedores.generarDotVendedores();
+    console.log(avl_vendedores.obtenerDotVendedores());
     console.log("**************DETALLE CLIENTES****************");
     avl_vendedores.inOrderClientes(avl_vendedores.raiz);
-    console.log("**************DOT EVENTOS POR MES****************");
-    avl_vendedores.inOrderMesesEventos(avl_vendedores.raiz);
 }
