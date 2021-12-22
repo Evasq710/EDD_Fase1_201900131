@@ -20,6 +20,12 @@ function datosVendedor(){
             edadVendedorActual = vendedor.edad;
             correoVendedorActual = vendedor.correo;
             passVendedorActual = vendedor.password;
+            document.getElementById('infoId').innerHTML = idVendedorActual.toString();
+            document.getElementById('infoNombre').innerHTML = nombreVendedorActual;
+            document.getElementById('infoUser').innerHTML = userVendedorActual;
+            document.getElementById('infoEdad').innerHTML = edadVendedorActual.toString();
+            document.getElementById('infoCorreo').innerHTML = correoVendedorActual;
+            document.getElementById('infoPass').innerHTML = passVendedorActual;
         }catch(error){
             console.log(error);
             console.log("El vendedor no fue ingresado con todos los datos necesarios.")

@@ -21,7 +21,10 @@
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-          <a class="navbar-brand" href="./vendedor.html"">ERPS</a>
+            <a class="navbar-brand" href="./vendedor.html">
+                <span class="material-icons md-24">api</span>
+                ERPS
+            </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -39,7 +42,9 @@
         </div>
       </nav>
 
-      <h1>VENDEDOR</h1>
+      <h1>
+          <span class="material-icons md-80">receipt_long</span>
+        VENDEDOR</h1>
       <h2>Enterprise resource planning system -ERPS-</h2>
 
       
@@ -122,7 +127,10 @@
                     <hr/>
 
                     <div class="form-group" id="verCalendario" style="display: none;">
-                      <h2>Calendario</h2>
+                      <h2>
+                          <span class="material-icons md-36">calendar_today</span>
+                        Calendario 2022
+                    </h2>
                       <div class="form-group">
                         <label for="mesCalendario" class="form-label mt-4">Mes</label>
                         <select class="form-select" id="mesCalendario">
@@ -149,7 +157,10 @@
                     </div>
 
                     <div class="form-group" id="agregarEvento" style="display: none;">
-                      <h2>Agregar Evento</h2>
+                      <h2>
+                          <span class="material-icons md-36">pending_actions</span>
+                        Agregar Evento
+                    </h2>
                       <div class="form-group">
                         <label for="addFecha" class="form-label mt-4" style="margin-right: 20px;">Fecha del nuevo evento 2022</label>
                         <input type="date" id="addFecha" value="2022-01-01" min="2022-01-01" max="2022-12-31" style="margin-right: 20px;" />
@@ -193,7 +204,23 @@
 
             <div class="tab-pane fade" id="miPerfil">
                 <div class="inner-container">
-                    <p>Perfil</p>
+                    <div class="card text-white bg-dark mb-3" style="max-width: 80%; margin: 0px auto;">
+                      <div class="card-header">Mi Perfil</div>
+                      <div class="card-body">
+                        <h4 class="card-title">ID</h4>
+                        <p class="card-text" style="background: white; color: black; padding-left: 10px;" id="infoId"></p>
+                        <h4 class="card-title">Nombre</h4>
+                        <p class="card-text" style="background: white; color: black; padding-left: 10px;" id="infoNombre"></p>
+                        <h4 class="card-title">Username</h4>
+                        <p class="card-text" style="background: white; color: black; padding-left: 10px;" id="infoUser"></p>
+                        <h4 class="card-title">Edad</h4>
+                        <p class="card-text" style="background: white; color: black; padding-left: 10px;" id="infoEdad"></p>
+                        <h4 class="card-title">Correo</h4>
+                        <p class="card-text" style="background: white; color: black; padding-left: 10px;" id="infoCorreo"></p>
+                        <h4 class="card-title">Password</h4>
+                        <p class="card-text" style="background: white; color: black; padding-left: 10px;" id="infoPass"></p>
+                      </div>
+                    </div>
                 </div>
             </div>
 

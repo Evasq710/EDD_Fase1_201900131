@@ -53,6 +53,12 @@ function registrarUsuario(){
                 localStorage.setItem("vendedoresJSON", JSON.stringify(nuevoEmpleado));
                 console.log("Se ha guardado vendedoresJSON correctamente...");
                 crearVendedores();
+                inputId.value = "";
+                inputUser.value = "";
+                inputNombre.value = "";
+                inputEdad.value = "";
+                inputCorreo.value = "";
+                inputPass.value = "";
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al vendedor, verifique la estructura del JSON. (Ver consola)");
@@ -79,6 +85,10 @@ function registrarUsuario(){
                 localStorage.setItem("clientesJSON", JSON.stringify(nuevoCliente));
                 console.log("Se ha guardado clientesJSON correctamente...");
                 crearClientes();
+                inputIdVendedor.value = "";
+                inputId.value = "";
+                inputNombre.value =  "";
+                inputCorreo.value = "";
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al cliente, verifique la estructura del JSON. (Ver consola)");
@@ -105,6 +115,11 @@ function registrarUsuario(){
                 localStorage.setItem("proveedoresJSON", JSON.stringify(nuevoProveedor));
                 console.log("Se ha guardado proveedoresJSON correctamente...");
                 crearProveedores();
+                inputId.value = "";
+                inputNombre.value = "";
+                inputDireccion.value = "";
+                inputTelefono.value = "";
+                inputCorreo.value = "";
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al proveedor, verifique la estructura del JSON. (Ver consola)");
