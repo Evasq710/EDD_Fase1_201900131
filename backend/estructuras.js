@@ -910,12 +910,46 @@ function recuperacionAnidadainOrder(raiz_actual){
             Object.assign(listaAnidadaMeses, listaSerializadaMeses);
             raiz_actual.calendario = listaAnidadaMeses;
     
-            //TODO Verificar EDD anidadas en CALENDARIO
             let mesActual = listaAnidadaMeses.primero;
             while(mesActual!= null){
+                //MATRIZ
                 let matrizSerializada = mesActual.matrizEventos;
                 let matrizEventosAnidada = new Matriz()
                 Object.assign(matrizEventosAnidada, matrizSerializada);
+
+                //CABECERAS M
+                let cabeceraMSerializada = matrizEventosAnidada.cabecerasM;
+                let cabeceraMAnidada = new ListaCabecera()
+                Object.assign(cabeceraMAnidada, cabeceraMSerializada);
+                matrizEventosAnidada.cabecerasM = cabeceraMAnidada;
+
+                let cabeceraActual = cabeceraMAnidada.primero;
+                while(cabeceraActual != null){
+                    //LISTA INTERNA DE NODOS EN M
+                    let listaNodosSerializada = cabeceraActual.listaInterna;
+                    let listaInternaAnidada = new ListaInternaEventos()
+                    Object.assign(listaInternaAnidada, listaNodosSerializada);
+                    cabeceraActual.listaInterna = listaInternaAnidada;
+                    cabeceraActual = cabeceraActual.siguiente;
+                }
+
+                //CABECERAS N
+                let cabeceraNSerializada = matrizEventosAnidada.cabecerasN;
+                let cabeceraNAnidada = new ListaCabecera()
+                Object.assign(cabeceraNAnidada, cabeceraNSerializada);
+                matrizEventosAnidada.cabecerasN = cabeceraNAnidada;
+
+                cabeceraActual = cabeceraNAnidada.primero;
+                while(cabeceraActual != null){
+                    //LISTA INTERNA DE NODOS EN N
+                    let listaNodosSerializada = cabeceraActual.listaInterna;
+                    let listaInternaAnidada = new ListaInternaEventos()
+                    Object.assign(listaInternaAnidada, listaNodosSerializada);
+                    cabeceraActual.listaInterna = listaInternaAnidada;
+                    cabeceraActual = cabeceraActual.siguiente;
+                }
+                
+                //ACTUALIZANDO MATRIZ EN MES ACTUAL
                 mesActual.matrizEventos = matrizEventosAnidada;
                 mesActual = mesActual.siguiente;
             }
