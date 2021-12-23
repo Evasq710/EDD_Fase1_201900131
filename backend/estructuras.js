@@ -282,6 +282,110 @@ class Avl{
         }
     }
 
+    eliminarVendedor(idVendedor){
+        if(this.raiz != null){
+            this.raiz = this.eliminarNodoVendedor(this.raiz, idVendedor);
+        }else{
+            console.log(`El árbol está vacío, por lo que ${idVendedor} no se encuentra guardado aún.`)
+        }
+    }
+
+    eliminarNodoVendedor(raizActual, idVendedor){
+        if(raizActual != null){
+            if(idVendedor < raizActual.dato){
+                raizActual.izquierdo = this.eliminarNodoVendedor(raizActual.izquierdo, idVendedor);
+
+                let factorEquilibrio = this.getAltura(raizActual.derecho) - this.getAltura(raizActual.izquierdo);
+                console.log(`F.E. idVendedor < raiz.dato ---> ${factorEquilibrio}`);
+                if(factorEquilibrio == -2){
+                    let factorEquilibrioIzq = this.getAltura(raizActual.izquierdo.derecho) - this.getAltura(raizActual.izquierdo.izquierdo);
+                    if(factorEquilibrioIzq == -1){
+                        console.log("Caso 1, Rotación Izq-Izq");
+                        raizActual = this.rotacionSimpleIzquierda(raizActual);
+                    }else{
+                        console.log("Caso 4, Rotación Izq-Der");
+                        raizActual = this.rotacionIzquierdaDerecha(raizActual);
+                    }
+                }else if(factorEquilibrio == 2){
+                    let factorEquilibrioDer = this.getAltura(raizActual.derecho.derecho) - this.getAltura(raizActual.derecho.izquierdo);
+                    if(factorEquilibrioDer == 1){
+                        console.log("Caso 2, Rotación Der-Der");
+                        raizActual = this.rotacionSimpleDerecha(raizActual);
+                    }else{
+                        console.log("Caso 3, Rotación Der-Izq");
+                        raizActual = this.rotacionDerechaIzquierda(raizActual);
+                    }
+                }
+                raizActual.altura = this.alturaMaxima(this.getAltura(raizActual.izquierdo), this.getAltura(raizActual.derecho)) + 1;
+                
+                return raizActual;
+            }else if(idVendedor > raizActual.dato){
+                raizActual.derecho = this.eliminarNodoVendedor(raizActual.derecho, idVendedor);
+
+                let factorEquilibrio = this.getAltura(raizActual.derecho) - this.getAltura(raizActual.izquierdo);
+                console.log(`F.E. idVendedor > raiz.dato ---> ${factorEquilibrio}`);
+                if(factorEquilibrio == -2){
+                    let factorEquilibrioIzq = this.getAltura(raizActual.izquierdo.derecho) - this.getAltura(raizActual.izquierdo.izquierdo);
+                    if(factorEquilibrioIzq == -1){
+                        console.log("Caso 1, Rotación Izq-Izq");
+                        raizActual = this.rotacionSimpleIzquierda(raizActual);
+                    }else{
+                        console.log("Caso 4, Rotación Izq-Der");
+                        raizActual = this.rotacionIzquierdaDerecha(raizActual);
+                    }
+                }else if(factorEquilibrio == 2){
+                    let factorEquilibrioDer = this.getAltura(raizActual.derecho.derecho) - this.getAltura(raizActual.derecho.izquierdo);
+                    if(factorEquilibrioDer == 1){
+                        console.log("Caso 2, Rotación Der-Der");
+                        raizActual = this.rotacionSimpleDerecha(raizActual);
+                    }else{
+                        console.log("Caso 3, Rotación Der-Izq");
+                        raizActual = this.rotacionDerechaIzquierda(raizActual);
+                    }
+                }
+                raizActual.altura = this.alturaMaxima(this.getAltura(raizActual.izquierdo), this.getAltura(raizActual.derecho)) + 1;
+                
+                return raizActual;
+            }else if(idVendedor == raizActual.dato){
+                if(raizActual.izquierdo == null && raizActual.derecho == null){
+                    //El nodo es hoja, no tiene hijos
+                    raizActual = null;
+                }
+                else if(raizActual.izquierdo == null){
+                    //Tiene hijo derecho
+                    raizActual = raizActual.derecho;
+                }
+                else if(raizActual.derecho == null){
+                    //Tiene hijo izquierdo
+                    raizActual = raizActual.izquierdo;
+                }
+                else {
+                    //Tiene hijo izquierdo y derecho
+                    //Buscamos la menor clave de los mayores (derecho)
+                    let menorNodo = this.obtenerMenorNodo(raizActual.derecho);
+                    //Sustituyendo el dato menor en el nodo a eliminar
+                    console.log(`Menor de los mayores: ${menorNodo.dato}, eliminando ${idVendedor}`)
+                    raizActual.dato = menorNodo.dato;
+                    //Eliminando el menor de los mayores, que pasó a ser la raizActual
+                    raizActual.derecho = this.eliminarNodoVendedor(raizActual.derecho, menorNodo.dato)
+                }
+                return raizActual;
+            }
+        }else{
+            console.log(`El ID ${idVendedor} no existe en el árbol.`)
+            return null;
+        }
+    }
+
+    obtenerMenorNodo(raizActual){
+        if(raizActual.izquierdo == null){
+            //La raíz actual es el menor
+            return raizActual;
+        }
+        //Si no, moverse por los subárboles a la izquierda
+        return this.obtenerMenorNodo(raizActual.izquierdo);
+    }
+
     insertarEvento(idVendedor, evento){
         return this.insertarEventoEnVendedor(this.raiz, idVendedor, evento.mes, evento.desc, evento.hora, evento.dia);
     }
