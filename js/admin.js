@@ -53,6 +53,7 @@ function registrarUsuario(){
                 localStorage.setItem("vendedoresJSON", JSON.stringify(nuevoEmpleado));
                 console.log("Se ha guardado vendedoresJSON correctamente...");
                 crearVendedores();
+                location.reload();
                 inputId.value = "";
                 inputUser.value = "";
                 inputNombre.value = "";
@@ -85,6 +86,7 @@ function registrarUsuario(){
                 localStorage.setItem("clientesJSON", JSON.stringify(nuevoCliente));
                 console.log("Se ha guardado clientesJSON correctamente...");
                 crearClientes();
+                location.reload();
                 inputIdVendedor.value = "";
                 inputId.value = "";
                 inputNombre.value =  "";
@@ -115,6 +117,7 @@ function registrarUsuario(){
                 localStorage.setItem("proveedoresJSON", JSON.stringify(nuevoProveedor));
                 console.log("Se ha guardado proveedoresJSON correctamente...");
                 crearProveedores();
+                location.reload();
                 inputId.value = "";
                 inputNombre.value = "";
                 inputDireccion.value = "";
@@ -127,6 +130,82 @@ function registrarUsuario(){
         } else {
             alert("Campos vacíos, todos los campos son obligatorios.");
         }
+    }
+}
+
+// Eliminación de usuarios
+
+var rdDeleteEmpleado = document.getElementById('optionDeleteEmpleado');
+var rdDeleteCliente = document.getElementById('optionDeleteCliente');
+var rdDeleteProveedor = document.getElementById('optionDeleteProveedor');
+
+var frmgrpDeleteEmpleado = document.getElementById('deleteEmpleado');
+var frmgrpDeleteCliente = document.getElementById('deleteCliente');
+var frmgrpDeleteProveedor = document.getElementById('deleteProveedor');
+
+var submitDeleteUser = document.getElementById("submitDeleteUser")
+submitDeleteUser.addEventListener('click', function(event){
+    event.preventDefault();
+});
+
+function tipoUsuarioEliminar(){
+    if(rdDeleteEmpleado.checked){
+        frmgrpDeleteEmpleado.style.display = 'block';
+        frmgrpDeleteCliente.style.display = 'none';
+        frmgrpDeleteProveedor.style.display = 'none';
+    } else if(rdDeleteCliente.checked){
+        frmgrpDeleteEmpleado.style.display = 'none';
+        frmgrpDeleteCliente.style.display = 'block';
+        frmgrpDeleteProveedor.style.display = 'none';
+    } else if(rdDeleteProveedor.checked){
+        frmgrpDeleteEmpleado.style.display = 'none';
+        frmgrpDeleteCliente.style.display = 'none';
+        frmgrpDeleteProveedor.style.display = 'block';
+    }
+}
+
+function eliminarUsuario(){
+    if(rdDeleteEmpleado.checked){
+        
+    } else if(rdDeleteCliente.checked){
+        
+    } else if(rdDeleteProveedor.checked){
+        eliminarProveedorSeleccionado();
+    }
+}
+
+var selectProveedor = document.getElementById('idNombreDeleteProveedor');
+
+function actualizarSelectProveedores(){
+    binario_proveedores.mostrarDatosProveedores(selectProveedor);
+}
+
+var direccionDltProveedor = document.getElementById('direccionDeleteProveedor');
+var telDltProveedor = document.getElementById('telDeleteProveedor');
+var emailDltProveedor = document.getElementById('correoDeleteProveedor');
+var proveedorSeleccionado = null;
+
+function onchangeSelectProveedor(){
+    let idProveedor = parseInt(selectProveedor.value);
+    if(idProveedor != 0){
+        proveedorSeleccionado = binario_proveedores.obtenerProveedor(idProveedor);
+        direccionDltProveedor.value = proveedorSeleccionado.direccion;
+        telDltProveedor.value = proveedorSeleccionado.telefono;
+        emailDltProveedor.value = proveedorSeleccionado.correo;
+    }else{
+        proveedorSeleccionado = null;
+        direccionDltProveedor.value = "";
+        telDltProveedor.value = "";
+        emailDltProveedor.value = "";
+    }
+}
+
+function eliminarProveedorSeleccionado(){
+    if(proveedorSeleccionado != null){
+        eliminacionProveedor(proveedorSeleccionado);
+        location.reload();
+    }else{
+        alert("Debe seleccionar un proveedor para su eliminación");
     }
 }
 

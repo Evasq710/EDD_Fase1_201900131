@@ -51,6 +51,97 @@ class AbbProveedor{
         }
     }
 
+    mostrarDatosProveedores(select){
+        this.insertarDatosProveedores(this.raiz, select);
+    }
+
+    insertarDatosProveedores(raizActual, select){
+        if(raizActual != null){
+            this.insertarDatosProveedores(raizActual.izquierdo, select);
+            let option = document.createElement('option');
+            option.value = raizActual.dato;
+            option.text = `[ID ${raizActual.dato}] ${raizActual.proveedor.nombre}`
+            select.appendChild(option);
+            this.insertarDatosProveedores(raizActual.derecho, select);
+        }
+    }
+
+    obtenerProveedor(idProveedor){
+        return this.obtenerJSONProveedor(this.raiz, idProveedor);
+    }
+
+    obtenerJSONProveedor(raizActual, idProveedor){
+        if(raizActual != null){
+            if(raizActual.dato == idProveedor){
+                return raizActual.proveedor;
+            }
+            let proveedor = this.obtenerJSONProveedor(raizActual.izquierdo, idProveedor);
+            if(proveedor != null){
+                return proveedor;
+            }
+            return this.obtenerJSONProveedor(raizActual.derecho, idProveedor);
+        }else{
+            return null;
+        }
+    }
+
+    eliminarProveedor(idProveedor){
+        if(this.raiz != null){
+            this.raiz = this.eliminarNodoProveedor(this.raiz, idProveedor);
+        }else{
+            console.log(`El árbol está vacío, por lo que ${idProveedor} no se encuentra guardado aún.`)
+        }
+    }
+
+    eliminarNodoProveedor(raizActual, idProveedor){
+        if(raizActual != null){
+            if(idProveedor < raizActual.dato){
+                raizActual.izquierdo = this.eliminarNodoProveedor(raizActual.izquierdo, idProveedor);
+                return raizActual;
+            }else if(idProveedor > raizActual.dato){
+                raizActual.derecho = this.eliminarNodoProveedor(raizActual.derecho, idProveedor);
+                return raizActual;
+            }else if(idProveedor == raizActual.dato){
+                if(raizActual.izquierdo == null && raizActual.derecho == null){
+                    //El nodo es hoja, no tiene hijos
+                    raizActual = null;
+                    return raizActual;
+                }
+                if(raizActual.izquierdo == null){
+                    //Tiene hijo derecho
+                    raizActual = raizActual.derecho;
+                    return raizActual;
+                }
+                if(raizActual.derecho == null){
+                    //Tiene hijo izquierdo
+                    raizActual = raizActual.izquierdo;
+                    return raizActual;
+                }
+                //Tiene hijo izquierdo y derecho
+                //Buscamos la menor clave de los mayores (derecho)
+                let menorNodo = this.obtenerMenorNodo(raizActual.derecho);
+                //Sustituyendo el dato menor en el nodo a eliminar
+                console.log(`Menor de los mayores: ${menorNodo.dato}, eliminando ${idProveedor}`)
+                raizActual.dato = menorNodo.dato;
+                //Eliminando el menor de los mayores, que pasó a ser la raizActual
+                raizActual.derecho = this.eliminarNodoProveedor(raizActual.derecho, menorNodo.dato)
+                return raizActual;
+            }
+        }else{
+            console.log(`El dato ${idProveedor} no existe en el árbol.`)
+            return null;
+        }
+    }
+
+    obtenerMenorNodo(raizActual){
+        if(raizActual.izquierdo == null){
+            //La raíz actual es el menor
+            return raizActual;
+        }
+        //Si no, moverse por los subárboles a la izquierda
+        return this.obtenerMenorNodo(raizActual.izquierdo);
+    }
+
     generarDotProveedores(){
         let cadena = "digraph arbol {\ngraph[label=\"Arbol binario Proveedores\"] node[shape=\"doublecircle\", style=\"filled\", fillcolor=\"palegreen\"]\n"
         cadena += this.generarNodos(this.raiz);
@@ -119,6 +210,58 @@ class Avl{
         }
     }
 
+    insertarNodo(raiz_actual, nuevo){
+        if(raiz_actual != null){
+            // Recorriendo los subárboles hijos hasta que termine de hacer la inserción, para retornar el raiz actual (this.raiz) con la inserción
+            if (nuevo.dato < raiz_actual.dato){
+                //Tomando el camino de la izquierda
+                raiz_actual.izquierdo = this.insertarNodo(raiz_actual.izquierdo, nuevo);
+                
+                //Si se inserta en el subarbol izquierdo, validar el posible FE negativo (Hd - Hi)
+                let factorEquilibrio = this.getAltura(raiz_actual.derecho) - this.getAltura(raiz_actual.izquierdo);
+                if(factorEquilibrio == -2){
+                    //Se insertó en el hijo de raiz actual.izquierdo, Caso 1 o Caso 4
+                    if(nuevo.dato < raiz_actual.izquierdo.dato){
+                        //FE -1 de raiz_actual.izquierdo, Caso 1, Rotación Izq-Izq
+                        //Haciendo la rotación
+                        raiz_actual = this.rotacionSimpleIzquierda(raiz_actual);
+                    }else{
+                        //FE 1 de raiz_actual.izquierdo, Caso 4, Rotación Izq-Der
+                        raiz_actual = this.rotacionIzquierdaDerecha(raiz_actual);
+                    }
+                }
+            } else if (nuevo.dato > raiz_actual.dato){
+                //Tomando el camino de la derecha
+                raiz_actual.derecho = this.insertarNodo(raiz_actual.derecho, nuevo);
+                
+                //Si se inserta en el subarbol derecho, validar el posible FE positivo 2 (Hd - Hi)
+                let factorEquilibrio = this.getAltura(raiz_actual.derecho) - this.getAltura(raiz_actual.izquierdo);
+                if(factorEquilibrio == 2){
+                    //Se insertó en el hijo de raiz actual.derecho, Caso 2 o Caso 3
+                    if(nuevo.dato < raiz_actual.derecho.dato){
+                        //FE -1 de raiz_actual.derecho, Caso 3, Rotación Der-Izq
+                        raiz_actual = this.rotacionDerechaIzquierda(raiz_actual);
+                    }else{
+                        //FE 1 de raiz_actual.derecho, Caso 2, Rotación Der-Der
+                        raiz_actual = this.rotacionSimpleDerecha(raiz_actual);
+                    }
+                }
+            } else {
+                console.log(`No se insertó el dato ${nuevo.dato}, ya que ya existe`)
+            }
+            
+            //Una vez insertado el nodo, se recalcula la altura de la raiz actual, con la altura máxima de los hijos
+            raiz_actual.altura = this.alturaMaxima(this.getAltura(raiz_actual.izquierdo), this.getAltura(raiz_actual.derecho)) + 1;
+
+            // Devuelve el this.raiz con el nuevo dato ya insertado
+            return raiz_actual;
+        } else {
+            //El hijo es nulo, por lo que metemos el nodo en él, luego de hacer los recorridos
+            raiz_actual = nuevo;
+            return raiz_actual;
+        }
+    }
+
     insertarCliente(idVendedor, cliente){
         return this.insertarClienteEnVendedor(this.raiz, idVendedor, cliente);
     }
@@ -179,58 +322,6 @@ class Avl{
             }
         }else{
             return false;
-        }
-    }
-
-    insertarNodo(raiz_actual, nuevo){
-        if(raiz_actual != null){
-            // Recorriendo los subárboles hijos hasta que termine de hacer la inserción, para retornar el raiz actual (this.raiz) con la inserción
-            if (nuevo.dato < raiz_actual.dato){
-                //Tomando el camino de la izquierda
-                raiz_actual.izquierdo = this.insertarNodo(raiz_actual.izquierdo, nuevo);
-                
-                //Si se inserta en el subarbol izquierdo, validar el posible FE negativo (Hd - Hi)
-                let factorEquilibrio = this.getAltura(raiz_actual.derecho) - this.getAltura(raiz_actual.izquierdo);
-                if(factorEquilibrio == -2){
-                    //Se insertó en el hijo de raiz actual.izquierdo, Caso 1 o Caso 4
-                    if(nuevo.dato < raiz_actual.izquierdo.dato){
-                        //FE -1 de raiz_actual.izquierdo, Caso 1, Rotación Izq-Izq
-                        //Haciendo la rotación
-                        raiz_actual = this.rotacionSimpleIzquierda(raiz_actual);
-                    }else{
-                        //FE 1 de raiz_actual.izquierdo, Caso 4, Rotación Izq-Der
-                        raiz_actual = this.rotacionIzquierdaDerecha(raiz_actual);
-                    }
-                }
-            } else if (nuevo.dato > raiz_actual.dato){
-                //Tomando el camino de la derecha
-                raiz_actual.derecho = this.insertarNodo(raiz_actual.derecho, nuevo);
-                
-                //Si se inserta en el subarbol derecho, validar el posible FE positivo 2 (Hd - Hi)
-                let factorEquilibrio = this.getAltura(raiz_actual.derecho) - this.getAltura(raiz_actual.izquierdo);
-                if(factorEquilibrio == 2){
-                    //Se insertó en el hijo de raiz actual.derecho, Caso 2 o Caso 3
-                    if(nuevo.dato < raiz_actual.derecho.dato){
-                        //FE -1 de raiz_actual.derecho, Caso 3, Rotación Der-Izq
-                        raiz_actual = this.rotacionDerechaIzquierda(raiz_actual);
-                    }else{
-                        //FE 1 de raiz_actual.derecho, Caso 2, Rotación Der-Der
-                        raiz_actual = this.rotacionSimpleDerecha(raiz_actual);
-                    }
-                }
-            } else {
-                console.log(`No se insertó el dato ${nuevo.dato}, ya que ya existe`)
-            }
-            
-            //Una vez insertado el nodo, se recalcula la altura de la raiz actual, con la altura máxima de los hijos
-            raiz_actual.altura = this.alturaMaxima(this.getAltura(raiz_actual.izquierdo), this.getAltura(raiz_actual.derecho)) + 1;
-
-            // Devuelve el this.raiz con el nuevo dato ya insertado
-            return raiz_actual;
-        } else {
-            //El hijo es nulo, por lo que metemos el nodo en él, luego de hacer los recorridos
-            raiz_actual = nuevo;
-            return raiz_actual;
         }
     }
 
@@ -948,7 +1039,7 @@ function recuperacionAnidadainOrder(raiz_actual){
                     cabeceraActual.listaInterna = listaInternaAnidada;
                     cabeceraActual = cabeceraActual.siguiente;
                 }
-                
+
                 //ACTUALIZANDO MATRIZ EN MES ACTUAL
                 mesActual.matrizEventos = matrizEventosAnidada;
                 mesActual = mesActual.siguiente;
@@ -969,7 +1060,7 @@ function recuperarABB(){
     }
 }
 
-// *********** INSERCIÓN DE DATOS A ESTRUCTURAS ***********
+// *********** INSERCIÓN DE DATOS A ESTRUCTURAS (CON EL STORAGE) ***********
 
 function crearProveedores(){
     let strProveedores = localStorage.getItem("proveedoresJSON");
@@ -1051,6 +1142,19 @@ function crearEventos(){
         localStorage.removeItem("eventosJSON");
         actualizarVendedoresStorage();
         alert("Se han agregado los eventos a los vendedores correctamente. Ver consola para más detalles.")
+    }
+}
+
+// ***************ELIMINACIÓN DE DATOS EN ESTRUCTURAS*******************
+
+function eliminacionProveedor(proveedor){
+    try{
+        binario_proveedores.eliminarProveedor(proveedor.id);
+        actualizarProveedoresStorage();
+        alert(`El proveedor ${proveedor.nombre} ha sido eliminado con éxito`);
+    }catch(error){
+        console.log(error);
+        alert("Ocurrió un error en la eliminación del proveedor");
     }
 }
 
