@@ -282,6 +282,40 @@ class Avl{
         }
     }
 
+    mostrarDatosVendedores(select){
+        this.insertarDatosVendedores(this.raiz, select);
+    }
+
+    insertarDatosVendedores(raizActual, select){
+        if(raizActual != null){
+            this.insertarDatosVendedores(raizActual.izquierdo, select);
+            let option = document.createElement('option');
+            option.value = raizActual.dato;
+            option.text = `[ID ${raizActual.dato}] ${raizActual.vendedor.nombre}`
+            select.appendChild(option);
+            this.insertarDatosVendedores(raizActual.derecho, select);
+        }
+    }
+
+    obtenerVendedorID(idVendedor){
+        return this.obtenerJSONVendedorID(this.raiz, idVendedor);
+    }
+
+    obtenerJSONVendedorID(raizActual, idVendedor){
+        if(raizActual != null){
+            if(raizActual.dato == idVendedor){
+                return raizActual.vendedor;
+            }
+            let vendedor = this.obtenerJSONVendedorID(raizActual.izquierdo, idVendedor);
+            if(vendedor != null){
+                return vendedor;
+            }
+            return this.obtenerJSONVendedorID(raizActual.derecho, idVendedor);
+        }else{
+            return null;
+        }
+    }
+
     eliminarVendedor(idVendedor){
         if(this.raiz != null){
             this.raiz = this.eliminarNodoVendedor(this.raiz, idVendedor);
@@ -1250,6 +1284,17 @@ function crearEventos(){
 }
 
 // ***************ELIMINACIÓN DE DATOS EN ESTRUCTURAS*******************
+
+function eliminacionVendedor(vendedor){
+    try{
+        avl_vendedores.eliminarVendedor(vendedor.id);
+        actualizarVendedoresStorage();
+        alert(`El vendedor ${vendedor.nombre} ha sido eliminado con éxito`);
+    }catch(error){
+        console.log(error);
+        alert("Ocurrió un error en la eliminación del vendedor");
+    }
+}
 
 function eliminacionProveedor(proveedor){
     try{

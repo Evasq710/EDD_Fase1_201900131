@@ -166,7 +166,7 @@ function tipoUsuarioEliminar(){
 
 function eliminarUsuario(){
     if(rdDeleteEmpleado.checked){
-        
+        eliminarVendedorSeleccionado();
     } else if(rdDeleteCliente.checked){
         
     } else if(rdDeleteProveedor.checked){
@@ -174,6 +174,42 @@ function eliminarUsuario(){
     }
 }
 
+//ELIMINAR VENDEDOR
+var selectVendedor = document.getElementById('idNombreDeleteEmpleado');
+
+function actualizarSelectVendedores(){
+    avl_vendedores.mostrarDatosVendedores(selectVendedor);
+}
+var userDltVendedor = document.getElementById('userDeleteEmpleado');
+var edadDltVendedor = document.getElementById('edadDeleteEmpleado');
+var correoDltVendedor = document.getElementById('correoDeleteEmpleado');
+var vendedorSeleccionado = null;
+
+function onchangeSelectVendedor(){
+    let idVendedor = parseInt(selectVendedor.value);
+    if(idVendedor != 0){
+        vendedorSeleccionado = avl_vendedores.obtenerVendedorID(idVendedor);
+        userDltVendedor.value = vendedorSeleccionado.username;
+        edadDltVendedor.value = vendedorSeleccionado.edad;
+        correoDltVendedor.value = vendedorSeleccionado.correo;
+    }else{
+        vendedorSeleccionado = null;
+        userDltVendedor.value = "";
+        edadDltVendedor.value = "";
+        correoDltVendedor.value = "";
+    }
+}
+
+function eliminarVendedorSeleccionado(){
+    if(vendedorSeleccionado != null){
+        eliminacionVendedor(vendedorSeleccionado);
+        location.reload();
+    }else{
+        alert("Debe seleccionar un vendedor para su eliminación");
+    }
+}
+
+//ELIMINAR PROVEEDOR
 var selectProveedor = document.getElementById('idNombreDeleteProveedor');
 
 function actualizarSelectProveedores(){
