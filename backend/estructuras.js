@@ -432,6 +432,25 @@ class Avl{
         }
     }
 
+    mostrarDatosClientesDeIDVendedor(idVendedor, select){
+        return this.insertarClientesDeIDVendedor(this.raiz, idVendedor, select);
+    }
+
+    insertarClientesDeIDVendedor(raizActual, idVendedor, select){
+        if(raizActual != null){
+            if(raizActual.dato == idVendedor){
+                raizActual.listaClientes.insertarDatosClientes(select);
+                return true;
+            }else if(idVendedor < raizActual.dato){
+                return this.insertarClientesDeIDVendedor(raizActual.izquierdo, idVendedor, select);
+            }else{
+                return this.insertarClientesDeIDVendedor(raizActual.derecho, idVendedor, select);
+            }
+        }else{
+            return false;
+        }
+    }
+
     obtenerCliente(idCliente, nombreCliente){
         return this.obtenerJSONClienteDeVendedor(this.raiz, idCliente, nombreCliente);
     }

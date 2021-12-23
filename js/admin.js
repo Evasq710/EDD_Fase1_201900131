@@ -53,13 +53,13 @@ function registrarUsuario(){
                 localStorage.setItem("vendedoresJSON", JSON.stringify(nuevoEmpleado));
                 console.log("Se ha guardado vendedoresJSON correctamente...");
                 crearVendedores();
-                location.reload();
                 inputId.value = "";
                 inputUser.value = "";
                 inputNombre.value = "";
                 inputEdad.value = "";
                 inputCorreo.value = "";
                 inputPass.value = "";
+                location.reload();
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al vendedor, verifique la estructura del JSON. (Ver consola)");
@@ -86,11 +86,11 @@ function registrarUsuario(){
                 localStorage.setItem("clientesJSON", JSON.stringify(nuevoCliente));
                 console.log("Se ha guardado clientesJSON correctamente...");
                 crearClientes();
-                location.reload();
                 inputIdVendedor.value = "";
                 inputId.value = "";
                 inputNombre.value =  "";
                 inputCorreo.value = "";
+                location.reload();
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al cliente, verifique la estructura del JSON. (Ver consola)");
@@ -117,12 +117,12 @@ function registrarUsuario(){
                 localStorage.setItem("proveedoresJSON", JSON.stringify(nuevoProveedor));
                 console.log("Se ha guardado proveedoresJSON correctamente...");
                 crearProveedores();
-                location.reload();
                 inputId.value = "";
                 inputNombre.value = "";
                 inputDireccion.value = "";
                 inputTelefono.value = "";
                 inputCorreo.value = "";
+                location.reload();
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al proveedor, verifique la estructura del JSON. (Ver consola)");
@@ -313,6 +313,7 @@ function cargaMasiva(){
                             localStorage.removeItem("cargaJSON");
                             console.log("Se han guardado los vendedoresJSON correctamente...");
                             crearVendedores();
+                            location.reload();
                         }catch(error){
                             console.log(error);
                             alert("Ha surgido un error al intentar guardar a los vendedores, verifique la estructura del JSON. (Ver consola)");
@@ -330,6 +331,7 @@ function cargaMasiva(){
                                 localStorage.removeItem("cargaJSON");
                                 console.log("Se han guardado los clientesJSON correctamente...");
                                 crearClientes();
+                                location.reload();
                             }catch(error){
                                 console.log(error);
                                 alert("Ha surgido un error al intentar guardar a los clientes, verifique la estructura del JSON. (Ver consola)");
@@ -349,6 +351,7 @@ function cargaMasiva(){
                             localStorage.removeItem("cargaJSON");
                             console.log("Se han guardado los proveedoresJSON correctamente...");
                             crearProveedores();
+                            location.reload();
                         }catch(error){
                             console.log(error);
                             alert("Ha surgido un error al intentar guardar a los proveedores, verifique la estructura del JSON. (Ver consola)");
@@ -366,6 +369,7 @@ function cargaMasiva(){
                                 localStorage.removeItem("cargaJSON");
                                 console.log("Se han guardado los eventosJSON correctamente...");
                                 crearEventos();
+                                location.reload();
                             }catch(error){
                                 console.log(error);
                                 alert("Ha surgido un error al intentar guardar a los eventos, verifique la estructura del JSON. (Ver consola)");

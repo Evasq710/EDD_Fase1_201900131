@@ -17,7 +17,7 @@
 
     <title>ERPS Vendedor</title>
 </head>
-<body onload="recuperarAVL(); recuperarABB(); datosVendedor();">
+<body onload="recuperarAVL(); recuperarABB(); datosVendedor(); actualizarSelectClientesDlt();">
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -76,6 +76,7 @@
 
                   <div class="form-group" id="nuevoCliente" style="display: none;">
                     <h2>Datos del nuevo cliente</h2>
+                    <hr/>
                     <div class="form-floating mb-3">
                       <input type="number" class="form-control" id="idNuevoCliente" placeholder="ID Cliente">
                       <label for="idNuevoCliente">ID Cliente</label>
@@ -95,21 +96,18 @@
 
                   <div class="form-group" id="eliminarCliente" style="display: none;">
                     <h2>Eliminación de cliente</h2>
+                    <hr/>
                     <div class="form-group">
-                      <select class="form-select mb-3" id="idClientesEnVendedor">
-                        <option value="0">ID 0 - Nombre de cliente en cartera de clientes del vendedor a eliminar</option>
+                      <select class="form-select mb-3" id="idClientesEnVendedor" onchange="changeSelectCliente()">
+                        <option value="0">[ID 0] - Nombre de cliente en cartera de clientes del vendedor a eliminar</option>
                       </select>
-                    </div>
-                    <div class="form-floating mb-3">
-                      <input type="text" class="form-control" id="mostrarNombreCliente" placeholder="Nombre" disabled>
-                      <label for="mostrarNombreCliente">Nombre</label>
                     </div>
                     <div class="form-floating mb-3">
                       <input type="email" class="form-control" id="mostrarCorreoCliente" placeholder="nombre@ejemplo.com" readonly>
                       <label for="mostrarCorreoCliente">Correo electrónico</label>
                     </div>
 
-                    <button type="button" class="btn btn-primary">Eliminar cliente</button>
+                    <button type="button" class="btn btn-primary" onclick="eliminarClienteSelected()">Eliminar cliente</button>
                     <small id="userHelp" class="form-text text-muted">Al eliminar el cliente, este se borrará tanto de su cartera de clientes, como del sistema.</small>
                   </div>
 
@@ -131,6 +129,7 @@
                           <span class="material-icons md-36">calendar_today</span>
                         Calendario 2022
                     </h2>
+                    <hr/>
                       <div class="form-group">
                         <label for="mesCalendario" class="form-label mt-4">Mes</label>
                         <select class="form-select" id="mesCalendario">
@@ -161,6 +160,7 @@
                           <span class="material-icons md-36">pending_actions</span>
                         Agregar Evento
                     </h2>
+                    <hr/>
                       <div class="form-group">
                         <label for="addFecha" class="form-label mt-4" style="margin-right: 20px;">Fecha del nuevo evento 2022</label>
                         <input type="date" id="addFecha" value="2022-01-01" min="2022-01-01" max="2022-12-31" style="margin-right: 20px;" />

@@ -57,6 +57,7 @@ function gestionEliminarCliente(){
     formgroupEliminarCliente.style.display = 'block';
 }
 
+//Creación de clientes
 var inputIDClienteNuevo = document.getElementById('idNuevoCliente');
 var inputNombreNuevo = document.getElementById('nombreNuevoCliente');
 var inputCorreoNuevo = document.getElementById('correoNuevoCliente');
@@ -88,6 +89,36 @@ function crearNuevoCliente(){
         inputCorreoNuevo.value = "";
     }else{
         alert("Todos los campos del nuevo cliente son obligatorios.")
+    }
+}
+
+//Eliminación de clientes
+var selectClienteDlt = document.getElementById('idClientesEnVendedor');
+
+function actualizarSelectClientesDlt(){
+    avl_vendedores.mostrarDatosClientesDeIDVendedor(idVendedorActual, selectClienteDlt);
+}
+var correoDeleteCliente = document.getElementById('mostrarCorreoCliente');
+var clienteSeleccionado = null;
+
+function changeSelectCliente(){
+    let idCliente = parseInt(selectClienteDlt.value);
+    let arrCliente = selectClienteDlt[selectClienteDlt.selectedIndex].innerHTML.split('-');
+    if(idCliente != 0){
+        clienteSeleccionado = avl_vendedores.obtenerCliente(idCliente, arrCliente[1]);
+        correoDeleteCliente.value = clienteSeleccionado.correo;
+    }else{
+        clienteSeleccionado = null;
+        correoDeleteCliente.value = "";
+    }
+}
+
+function eliminarClienteSelected(){
+    if(clienteSeleccionado != null){
+        eliminacionCliente(clienteSeleccionado);
+        location.reload();
+    }else{
+        alert("Debe seleccionar un cliente para su eliminación");
     }
 }
 
