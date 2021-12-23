@@ -17,7 +17,7 @@
 
     <title>ERPS Admin</title>
 </head>
-<body onload="recuperarAVL(); recuperarABB(); actualizarSelectVendedores(); actualizarSelectProveedores();">
+<body onload="recuperarAVL(); recuperarABB(); actualizarSelectVendedores(); actualizarSelectClientes(); actualizarSelectProveedores();">
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
@@ -223,20 +223,13 @@
   
                         <div class="form-group" id="deleteCliente" style="display: none;">
                           <label class="form-label mt-4">Datos del Cliente</label>
-                          <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="idVendedor" placeholder="ID Empleado">
-                            <label for="idVendedor">ID Empleado asignado</label>
+                          <div class="form-group">
+                            <select class="form-select mb-3" id="idNombreDeleteCliente" onchange="onchangeSelectCliente()">
+                              <option value="0">ID - Nombre del cliente</option>
+                            </select>
                           </div>
                           <div class="form-floating mb-3">
-                            <input type="number" class="form-control" id="idCliente" placeholder="ID Cliente">
-                            <label for="idCliente">ID Cliente</label>
-                          </div>
-                          <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="nombreCliente" placeholder="Nombre">
-                            <label for="nombreCliente">Nombre</label>
-                          </div>
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="correoCliente" placeholder="nombre@ejemplo.com">
+                            <input type="email" class="form-control" id="correoDeleteCliente" placeholder="nombre@ejemplo.com" readonly>
                             <label for="correoCliente">Correo electrónico</label>
                           </div>
                         </div>

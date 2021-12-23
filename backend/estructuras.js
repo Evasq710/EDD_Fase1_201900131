@@ -420,6 +420,57 @@ class Avl{
         return this.obtenerMenorNodo(raizActual.izquierdo);
     }
 
+    mostrarDatosClientes(select){
+        this.insertarDatosClientesDeVendedor(this.raiz, select);
+    }
+
+    insertarDatosClientesDeVendedor(raizActual, select){
+        if(raizActual != null){
+            this.insertarDatosClientesDeVendedor(raizActual.izquierdo, select);
+            raizActual.listaClientes.insertarDatosClientes(select);
+            this.insertarDatosClientesDeVendedor(raizActual.derecho, select);
+        }
+    }
+
+    obtenerCliente(idCliente, nombreCliente){
+        return this.obtenerJSONClienteDeVendedor(this.raiz, idCliente, nombreCliente);
+    }
+
+    obtenerJSONClienteDeVendedor(raizActual, idCliente, nombreCliente){
+        if(raizActual != null){
+            let cliente = raizActual.listaClientes.obtenerJSONCliente(idCliente, nombreCliente);
+            if(cliente != null){
+                return cliente;
+            }
+            cliente = this.obtenerJSONClienteDeVendedor(raizActual.izquierdo, idCliente, nombreCliente);
+            if(cliente != null){
+                return cliente;
+            }
+            return this.obtenerJSONClienteDeVendedor(raizActual.derecho, idCliente, nombreCliente);
+        }else{
+            return null;
+        }
+    }
+
+    eliminarClienteEnAVL(cliente){
+        return this.eliminarClienteEnVendedor(this.raiz, cliente);
+    }
+
+    eliminarClienteEnVendedor(raizActual, cliente){
+        if(raizActual != null){
+            let eliminado = raizActual.listaClientes.eliminarCliente(cliente);
+            if(eliminado == true){
+                return true;
+            }
+            eliminado = this.eliminarClienteEnVendedor(raizActual.izquierdo, cliente);
+            if(eliminado == true){
+                return true;
+            }
+            eliminado = this.eliminarClienteEnVendedor(raizActual.derecho, cliente);
+            return eliminado;
+        }
+    }
+
     insertarEvento(idVendedor, evento){
         return this.insertarEventoEnVendedor(this.raiz, idVendedor, evento.mes, evento.desc, evento.hora, evento.dia);
     }
@@ -668,6 +719,58 @@ class ListaDobleClientes{
             actual.siguiente = nuevo;
             nuevo.anterior = actual;
         }
+    }
+
+    eliminarCliente(cliente){
+        if(this.primero != null){
+            if(this.primero.cliente.id == cliente.id && this.primero.cliente.nombre == cliente.nombre){
+                if(this.primero.siguiente != null){
+                    this.primero.siguiente.anterior = null;
+                    this.primero = this.primero.siguiente;
+                }else{
+                    this.primero = null;
+                }
+                console.log(`Se eliminó al cliente con id ${cliente.id}, ${cliente.nombre}`);
+                return true;
+            }
+            let actual = this.primero;
+            while(actual != null){
+                if(actual.cliente.id == cliente.id && actual.cliente.nombre == cliente.nombre){
+                    actual.anterior.siguiente = actual.siguiente;
+                    if(actual.siguiente != null){
+                        actual.siguiente.anterior = actual.anterior;
+                    }
+                    actual = null;
+                    console.log(`Se eliminó al cliente con id ${cliente.id}, ${cliente.nombre}`);
+                    return true;
+                }
+                actual = actual.siguiente;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    insertarDatosClientes(select){
+        let actual = this.primero;
+        while(actual != null){
+            let option = document.createElement('option');
+            option.value = actual.cliente.id;
+            option.text = `[ID ${actual.cliente.id}]-${actual.cliente.nombre}`
+            select.appendChild(option);
+            actual = actual.siguiente;
+        }
+    }
+
+    obtenerJSONCliente(idCliente, nombreCliente){
+        let actual = this.primero;
+        while(actual != null){
+            if(actual.cliente.id == idCliente && actual.cliente.nombre == nombreCliente){
+                return actual.cliente;
+            }
+            actual = actual.siguiente;
+        }
+        return null;
     }
 
     mostrarClientes(){
@@ -1296,6 +1399,20 @@ function eliminacionVendedor(vendedor){
     }
 }
 
+function eliminacionCliente(cliente){
+    try{
+        let eliminado = avl_vendedores.eliminarClienteEnAVL(cliente);
+        if(eliminado == true){
+            actualizarVendedoresStorage();
+            alert(`El cliente ${cliente.nombre} ha sido eliminado con éxito`);
+        }else{
+            alert("Ocurrió un error en la eliminación del cliente (Eliminado = false).");
+        }
+    }catch(error){
+        console.log(error);
+        alert("Ocurrió un error en la eliminación del cliente (Ver consola)");
+    }
+}
 function eliminacionProveedor(proveedor){
     try{
         binario_proveedores.eliminarProveedor(proveedor.id);
