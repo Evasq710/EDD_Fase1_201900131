@@ -441,3 +441,27 @@ function gestionReporteVentas(){
     formgroupReporteVentas.style.display = 'block';
 }
 
+// CONTROL DE VISTAS RUTAS
+var formgroupCargaRutas = document.getElementById('cargaRutas');
+var formgroupReporteRutas = document.getElementById('reporteRutas');
+var formgroupRutaOptima = document.getElementById('rutasOptimas');
+
+function gestionCargaRutas(){
+    formgroupCargaRutas.style.display = 'block';
+    formgroupReporteRutas.style.display = 'none';
+    formgroupRutaOptima.style.display = 'none';
+}
+
+function gestionReporteRutas(){
+    formgroupCargaRutas.style.display = 'none';
+    formgroupReporteRutas.style.display = 'block';
+    formgroupRutaOptima.style.display = 'none';
+}
+
+function gestionRutaOptima(){
+    formgroupCargaRutas.style.display = 'none';
+    formgroupReporteRutas.style.display = 'none';
+    formgroupRutaOptima.style.display = 'block';
+}
+
+

@@ -55,7 +55,7 @@
               <a class="nav-link" data-bs-toggle="tab" href="#registro">REGISTRO</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="tab" href="#eliminacion">ELIMINACIÓN DE USUARIOS</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#eliminacion">ELIMINACIÓN</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="tab" href="#cargas">CARGAS MASIVAS</a>
@@ -68,6 +68,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="tab" href="#ventas">VENTAS</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#rutas">RUTAS</a>
             </li>
           </ul>
 
@@ -547,6 +550,65 @@
                   <hr/>
                   <label for="textDotVentas" class="form-label mt-4">Código DOT del grafo</label>
                   <textarea class="form-control" id="textDotVentas" rows="20" readonly></textarea>
+                </div>
+                
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="rutas">
+              <div class="inner-container">
+                <div class="container-btn">
+                  <div class="btn-group" role="group" aria-label="Basic outlined example">
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionCargaRutas();">Carga masiva de rutas</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteRutas();">Reporte de rutas</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionRutaOptima();">Rutas óptimas</button>
+                  </div>
+                </div>
+                <hr/>
+
+                <div class="form-group" id="cargaRutas" style="display: none;">
+                  <h2>Carga masiva de rutas</h2>
+                  <hr/>
+                  <div class="form-group">
+                    <label class="form-label mt-4">Archivo JSON para la carga de rutas</label>
+                    <div class="form-floating mb-3">
+                      <input type="file" class="form-control" id="fileCargaRutas"/>
+                    </div>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" onclick="">Cargar rutas</button>
+                  <button type="button" class="btn btn-primary" onclick="">PRUEBAS FASE II RUTAS</button>
+                </div>
+
+                <div class="form-group" id="reporteRutas" style="display: none;">
+                  <h2>Vista de rutas</h2>
+                  <hr/>
+
+                  <div class="container-reporte" id="grafoRutas"></div>
+                  <hr/>
+                  <label for="textDotRutas" class="form-label mt-4">Código DOT del grafo</label>
+                  <textarea class="form-control" id="textDotRutas" rows="20" readonly></textarea>
+                </div>
+
+                <div class="form-group" id="rutasOptimas" style="display: none;">
+                  <h2>Cálculo de rutas óptimas</h2>
+                  <hr/>
+                  <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="idNodoOrigen" placeholder="ID Origen">
+                    <label for="idNodoOrigen">ID Nodo Origen</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="idNodoDestino" placeholder="ID Destino">
+                    <label for="idNodoDestino">ID Nodo Destino</label>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" onclick="">Generar ruta óptima</button>
+                  <hr/>
+                  
+                  <div class="container-reporte" id="grafoRutaOptima"></div>
+                  <hr/>
+                  <label for="textDotRutaOptima" class="form-label mt-4">Código DOT del grafo</label>
+                  <textarea class="form-control" id="textDotRutaOptima" rows="20" readonly></textarea>
                 </div>
                 
               </div>
