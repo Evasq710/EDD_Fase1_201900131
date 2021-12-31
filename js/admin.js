@@ -392,3 +392,52 @@ function cargaMasiva(){
         alert("Debes seleccionar un archivo para la carga masiva.");
     }
 }
+
+// ************************* FASE II *******************************
+
+// CONTROL DE VISTAS INVENTARIO
+var formgroupCrearProducto = document.getElementById('nuevoProducto');
+var formgroupCargaProductos = document.getElementById('cargaProductos');
+var formgroupGrafoProductos = document.getElementById('reporteProductos');
+
+function gestionNuevoProducto(){
+    formgroupCrearProducto.style.display = 'block';
+    formgroupCargaProductos.style.display = 'none';
+    formgroupGrafoProductos.style.display = 'none';
+}
+
+function gestionCargaProductos(){
+    formgroupCrearProducto.style.display = 'none';
+    formgroupCargaProductos.style.display = 'block';
+    formgroupGrafoProductos.style.display = 'none';
+}
+
+function gestionReporteProductos(){
+    formgroupCrearProducto.style.display = 'none';
+    formgroupCargaProductos.style.display = 'none';
+    formgroupGrafoProductos.style.display = 'block';
+}
+
+// CONTROL DE VISTAS VENTAS
+var formgroupCrearVenta = document.getElementById('nuevaVenta');
+var formgroupCargaVentas = document.getElementById('cargaVentas');
+var formgroupReporteVentas = document.getElementById('reporteVentas');
+
+function gestionNuevaVenta(){
+    formgroupCrearVenta.style.display = 'block';
+    formgroupCargaVentas.style.display = 'none';
+    formgroupReporteVentas.style.display = 'none';
+}
+
+function gestionCargaVentas(){
+    formgroupCrearVenta.style.display = 'none';
+    formgroupCargaVentas.style.display = 'block';
+    formgroupReporteVentas.style.display = 'none';
+}
+
+function gestionReporteVentas(){
+    formgroupCrearVenta.style.display = 'none';
+    formgroupCargaVentas.style.display = 'none';
+    formgroupReporteVentas.style.display = 'block';
+}
+

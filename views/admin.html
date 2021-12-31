@@ -52,16 +52,22 @@
 
         <ul class="nav nav-tabs">
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="tab" href="#registro">REGISTRO DE USUARIOS Y PROVEEDORES</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#registro">REGISTRO</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="tab" href="#eliminacion">ELIMINACIÓN DE USUARIOS Y PROVEEDORES</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#eliminacion">ELIMINACIÓN DE USUARIOS</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="tab" href="#cargas">CARGAS MASIVAS</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="tab" href="#reportes">REPORTES</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#inventario">MANEJO DE INVENTARIO</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#ventas">VENTAS</a>
             </li>
           </ul>
 
@@ -391,6 +397,159 @@
                 <textarea class="form-control" id="textDot" rows="20" readonly></textarea>
               </div>
 
+            </div>
+
+<!-- *************** FASE II ****************** -->
+
+            <div class="tab-pane fade" id="inventario">
+              <div class="inner-container">
+                <div class="container-btn">
+                  <div class="btn-group" role="group" aria-label="Basic outlined example">
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionNuevoProducto();">Carga manual de productos</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionCargaProductos();">Carga masiva de productos</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteProductos();">Ver productos</button>
+                  </div>
+                </div>
+                <hr/>
+
+                <div class="form-group" id="nuevoProducto" style="display: none;">
+                  <h2>Datos del nuevo producto</h2>
+                  <hr/>
+                  <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="idNuevoProducto" placeholder="ID Producto">
+                    <label for="idNuevoProducto">ID Producto</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="nombreNuevoProducto" placeholder="Nombre producto">
+                    <label for="nombreNuevoProducto">Nombre producto</label>
+                  </div>
+                  <div class="input-group mb-3">
+                    <span class="input-group-text">Q</span>
+                    <input type="number" class="form-control" id="precioNuevoProducto" placeholder="Precio del producto">
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="cantidadNuevoProducto" placeholder="Cantidad">
+                    <label for="cantidadNuevoProducto">Cantidad del producto nuevo</label>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" onclick="">Cargar producto</button>
+                </div>
+
+                <div class="form-group" id="cargaProductos" style="display: none;">
+                  <h2>Carga masiva de productos</h2>
+                  <hr/>
+                  <div class="form-group">
+                    <label class="form-label mt-4">Archivo JSON para la carga de productos</label>
+                    <div class="form-floating mb-3">
+                      <input type="file" class="form-control" id="fileCargaProductos"/>
+                    </div>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" onclick="">Cargar productos</button>
+                  <button type="button" class="btn btn-primary" onclick="">PRUEBAS FASE II INVENTARIO</button>
+                </div>
+
+                <div class="form-group" id="reporteProductos" style="display: none;">
+                  <h2>Vista de inventario</h2>
+                  <hr/>
+
+                  <div class="container-reporte" id="grafoProductos"></div>
+                  <hr/>
+                  <label for="textDotProductos" class="form-label mt-4">Código DOT del grafo</label>
+                  <textarea class="form-control" id="textDotProductos" rows="20" readonly></textarea>
+                </div>
+                
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="ventas">
+              <div class="inner-container">
+                <div class="container-btn">
+                  <div class="btn-group" role="group" aria-label="Basic outlined example">
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionNuevaVenta();">Carga manual de venta</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionCargaVentas();">Carga masiva de ventas</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteVentas();">Reporte de ventas</button>
+                  </div>
+                </div>
+                <hr/>
+
+                <div class="form-group" id="nuevaVenta" style="display: none;">
+                  <h2>Datos de la nueva venta</h2>
+                  <hr/>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="nombreVentaVendedor" placeholder="Nombre vendedor">
+                    <label for="nombreVentaVendedor">Nombre vendedor</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="nombreVentaCliente" placeholder="Nombre cliente">
+                    <label for="nombreVentaCliente">Nombre cliente</label>
+                  </div>
+
+                  <table class="table table-hover" style="text-align: center;">
+                    <thead>
+                      <tr class="table-dark">
+                        <th scope="col">ID Producto</th>
+                        <th scope="col">Nombre producto</th>
+                        <th scope="col" colspan="2">Precio individual</th>
+                        <th scope="col">Cantidad en inventario</th>
+                        <th scope="col">Cantidad vendida</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- <tr class="table-secondary">
+                        <th scope="row">1</th>
+                        <td>Colchones</td>
+                        <td>Q</td>
+                        <td>500</td>
+                        <td>50</td>
+                        <td>
+                          <input type="number" min="0" max="50" placeholder="0"/>
+                        </td>
+                      </tr> -->
+                    </tbody>
+                  </table>
+
+                  <div class="input-group mb-3">
+                    <span class="input-group-text">Q</span>
+                    <input type="number" class="form-control" id="totalVenta" placeholder="Total de venta" readonly>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" onclick="">Cargar venta</button>
+                </div>
+
+                <div class="form-group" id="cargaVentas" style="display: none;">
+                  <h2>Carga masiva de ventas</h2>
+                  <hr/>
+                  <div class="form-group">
+                    <label class="form-label mt-4">Archivo JSON para la carga de ventas</label>
+                    <div class="form-floating mb-3">
+                      <input type="file" class="form-control" id="fileCargaVentas"/>
+                    </div>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" onclick="">Cargar ventas</button>
+                  <button type="button" class="btn btn-primary" onclick="">PRUEBAS FASE II VENTAS</button>
+                </div>
+
+                <div class="form-group" id="reporteVentas" style="display: none;">
+                  <h2>Reporte de ventas</h2>
+                  <hr/>
+                  <div class="form-group mb-3">
+                    <label for="nombresReporteVentas" class="form-label mt-4">Nombre del vendedor</label>
+                    <select class="form-select" id="nombresReporteVentas">
+
+                    </select>
+                  </div>
+                  <button type="button" class="btn btn-primary" onclick="">Generar reporte de ventas</button>
+                  <hr/>
+
+                  <div class="container-reporte" id="grafoVentas"></div>
+                  <hr/>
+                  <label for="textDotVentas" class="form-label mt-4">Código DOT del grafo</label>
+                  <textarea class="form-control" id="textDotVentas" rows="20" readonly></textarea>
+                </div>
+                
+              </div>
             </div>
           </div>
 
