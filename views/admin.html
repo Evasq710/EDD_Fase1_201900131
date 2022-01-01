@@ -410,7 +410,7 @@
                   <div class="btn-group" role="group" aria-label="Basic outlined example">
                       <button type="button" class="btn btn-outline-primary" onclick="gestionNuevoProducto();">Carga manual de productos</button>
                       <button type="button" class="btn btn-outline-primary" onclick="gestionCargaProductos();">Carga masiva de productos</button>
-                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteProductos();">Ver productos</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteProductos(); generarGrafoProductos();">Ver productos</button>
                   </div>
                 </div>
                 <hr/>
@@ -435,7 +435,7 @@
                     <label for="cantidadNuevoProducto">Cantidad del producto nuevo</label>
                   </div>
 
-                  <button type="button" class="btn btn-primary" onclick="">Cargar producto</button>
+                  <button type="button" class="btn btn-primary" onclick="registrarProducto();">Cargar producto</button>
                 </div>
 
                 <div class="form-group" id="cargaProductos" style="display: none;">
@@ -449,7 +449,7 @@
                   </div>
 
                   <button type="button" class="btn btn-primary" onclick="cargaMasivaProductos()">Cargar productos</button>
-                  <button type="button" class="btn btn-primary" onclick="pruebasInventario();">PRUEBAS FASE II INVENTARIO</button>
+                  <button type="button" class="btn btn-primary" onclick="pruebasInventario();" style="display: none;">PRUEBAS FASE II INVENTARIO</button>
                 </div>
 
                 <div class="form-group" id="reporteProductos" style="display: none;">
@@ -619,6 +619,7 @@
 
     <script src="../js/admin.js"></script>
     <script src="../js/reportes.js"></script>
+    <script src="../js/reportesFaseII.js"></script>
     <script src="../backend/circular-json.js"></script>
     <script src="../backend/estructuras.js"></script>
     <script src="../backend/estructurasFaseII.js"></script>

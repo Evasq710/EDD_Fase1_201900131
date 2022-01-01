@@ -265,9 +265,8 @@ class arbolBProductos{
     }
 
     graficarArbolB(){
-        let cadena="digraph arbolB{\n";
-        cadena+="rankr=TB;\n";
-        cadena+="node[shape = box fillcolor=\"lightblue\" color=\"black\" style=\"filled\" fontname=\"Arial\"];\n";
+        let cadena="digraph arbolB{\nrankr=TB;\n";
+        cadena+="graph[label=\"Arbol B Productos\"]; \nnode[shape = \"box\", style=\"filled\", fillcolor=\"lightblue\"];\n";
         cadena+= this.graficarNodos(this.raiz);
         cadena+=  this.graficarEnlaces(this.raiz);
         cadena+="}\n"
@@ -285,7 +284,7 @@ class arbolBProductos{
                 let auxiliar = raizActual.listaClaves.primero;
                 while(auxiliar!=null){
                     contador++;
-                    cadena+=`|{${auxiliar.dato}\\n${auxiliar.producto.nombre}\\nPrecio: ${auxiliar.producto.precio}\\nCantidad: ${auxiliar.producto.cantidad}}|<p${contador}>`;
+                    cadena+=`|{${auxiliar.dato}\\n${auxiliar.producto.nombre}\\nPrecio: Q ${auxiliar.producto.precio}\\nCantidad: ${auxiliar.producto.cantidad}}|<p${contador}>`;
                     auxiliar= auxiliar.siguiente;
                 }
                 cadena+="\"]"+raizActual.listaClaves.primero.dato+";\n";
@@ -296,7 +295,7 @@ class arbolBProductos{
                 let auxiliar = raizActual.listaClaves.primero;
                 while(auxiliar!=null){
                     contador++;
-                    cadena+=`|{${auxiliar.dato}\\n${auxiliar.producto.nombre}\\nPrecio: ${auxiliar.producto.precio}\\nCantidad: ${auxiliar.producto.cantidad}}|<p${contador}>`;
+                    cadena+=`|{${auxiliar.dato}\\n${auxiliar.producto.nombre}\\nPrecio: Q ${auxiliar.producto.precio}\\nCantidad: ${auxiliar.producto.cantidad}}|<p${contador}>`;
                     auxiliar= auxiliar.siguiente;
                 }
                 cadena+="\"]"+raizActual.listaClaves.primero.dato+";\n";
@@ -360,7 +359,12 @@ function recuperacionAnidadaArbolB(paginaActual){
         Object.assign(listaAnidadaNodosB, listaSerializadaNodosB);
         paginaActual.listaClaves = listaAnidadaNodosB;
 
-        paginaActual.listaClaves.primero = recuperacionNodos(paginaActual.listaClaves.primero)
+        paginaActual.listaClaves.primero = recuperacionNodos(paginaActual.listaClaves.primero);
+        let nodoUltimo = paginaActual.listaClaves.primero;
+        while(nodoUltimo != null && nodoUltimo.siguiente != null){
+            nodoUltimo = nodoUltimo.siguiente;
+        }
+        paginaActual.listaClaves.ultimo = nodoUltimo;
         
         if(!paginaActual.paginaEsHoja()){
             let nodoActual = paginaActual.listaClaves.primero;

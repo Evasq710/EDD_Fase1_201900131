@@ -477,6 +477,37 @@ inputFileProductos.addEventListener('change', function(e){
     }
 }, false);
 
+// REGISTRO INDIVIDUAL DE PRODUCTOS
+function registrarProducto(){
+    let inputId = document.getElementById('idNuevoProducto');
+    let inputNombre = document.getElementById('nombreNuevoProducto');
+    let inputPrecio = document.getElementById('precioNuevoProducto');
+    let inputCantidad = document.getElementById('cantidadNuevoProducto');
+
+    if((inputId.value != "") && (inputNombre.value != "") && (inputPrecio.value != "") && (inputCantidad.value != "")){
+        let nuevoProducto = [{
+            'id': parseInt(inputId.value),
+            'nombre': inputNombre.value,
+            'precio': parseFloat(inputPrecio.value),
+            'cantidad': parseInt(inputCantidad.value)
+        }]
+        try{
+            localStorage.setItem("productosJSON", JSON.stringify(nuevoProducto));
+            console.log("Se ha guardado productosJSON correctamente...");
+            crearProductos();
+            inputId.value = "";
+            inputNombre.value = "";
+            inputPrecio.value = "";
+            inputCantidad.value = "";
+        }catch(error){
+            console.log(error);
+            alert("Ha surgido un error al intentar guardar el producto, verifique la estructura del JSON. (Ver consola)");
+        }
+    } else {
+        alert("Campos vacíos, todos los campos son obligatorios.");
+    }
+}
+
 // CARGA MASIVA PRODUCTOS
 function cargaMasivaProductos(){
     if(typeof inputFileProductos.files[0] !== 'undefined'){
