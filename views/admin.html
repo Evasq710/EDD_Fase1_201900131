@@ -17,7 +17,7 @@
 
     <title>ERPS Admin</title>
 </head>
-<body onload="recuperarAVL(); recuperarABB(); actualizarSelectVendedores(); actualizarSelectClientes(); actualizarSelectProveedores();">
+<body onload="recuperarAVL(); recuperarABB(); recuperarArbolB(); actualizarSelectVendedores(); actualizarSelectClientes(); actualizarSelectProveedores();">
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
@@ -448,8 +448,8 @@
                     </div>
                   </div>
 
-                  <button type="button" class="btn btn-primary" onclick="">Cargar productos</button>
-                  <button type="button" class="btn btn-primary" onclick="">PRUEBAS FASE II INVENTARIO</button>
+                  <button type="button" class="btn btn-primary" onclick="cargaMasivaProductos()">Cargar productos</button>
+                  <button type="button" class="btn btn-primary" onclick="pruebasInventario();">PRUEBAS FASE II INVENTARIO</button>
                 </div>
 
                 <div class="form-group" id="reporteProductos" style="display: none;">
@@ -621,6 +621,7 @@
     <script src="../js/reportes.js"></script>
     <script src="../backend/circular-json.js"></script>
     <script src="../backend/estructuras.js"></script>
+    <script src="../backend/estructurasFaseII.js"></script>
 
 </body>
 </html>

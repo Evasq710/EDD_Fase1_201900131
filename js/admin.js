@@ -464,4 +464,47 @@ function gestionRutaOptima(){
     formgroupRutaOptima.style.display = 'block';
 }
 
+// ----- INVENTARIO ------
 
+var inputFileProductos = document.getElementById('fileCargaProductos');
+inputFileProductos.addEventListener('change', function(e){
+    const reader = new FileReader();
+    reader.onload = function(){
+        localStorage.setItem("cargaProductosJSON", reader.result);
+    };
+    if(typeof inputFileProductos.files[0] !== 'undefined' && inputFileProductos.files[0].name.split('.')[1] == 'json'){
+        reader.readAsText(inputFileProductos.files[0], 'UTF-8');
+    }
+}, false);
+
+// CARGA MASIVA PRODUCTOS
+function cargaMasivaProductos(){
+    if(typeof inputFileProductos.files[0] !== 'undefined'){
+        if(inputFileProductos.files[0].name.split('.')[1] == 'json'){
+            try{
+                let cargaProductosJSON = localStorage.getItem("cargaProductosJSON");
+                if(cargaProductosJSON != null){
+                    let objetoProductos = JSON.parse(cargaProductosJSON);
+                    try{
+                        localStorage.setItem("productosJSON", JSON.stringify(objetoProductos.productos));
+                        localStorage.removeItem("cargaProductosJSON");
+                        console.log("Se han guardado los productosJSON correctamente...");
+                        crearProductos();
+                    }catch(error){
+                        console.log(error);
+                        alert("Ha surgido un error al intentar guardar a los productos, verifique la estructura del JSON. (Ver consola)");
+                    }
+                }else{
+                    alert("Ha surgido un error al intentar guardar el JSON de productos en el localStorage.");
+                }
+            }catch(error){
+                console.log(error);
+                alert("No ha sido posible realizar la carga masiva (Ver consola).");
+            }
+        }else {
+            alert("El archivo debe ser JSON (extensión .json)");
+        }
+    } else {
+        alert("Debes seleccionar un archivo para la carga masiva.");
+    }
+}
