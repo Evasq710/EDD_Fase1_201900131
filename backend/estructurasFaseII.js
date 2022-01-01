@@ -333,9 +333,280 @@ class arbolBProductos{
     }
 }
 
+// ************* TABLA HASH DE VENTAS, CON LISTA ENLAZADA DE PRODUCTOS *************
+
+// LISTA ENLAZADA DE PRODUCTOS
+class nodoProductoVendido{
+    constructor(productoVendido){
+        this.dato = productoVendido.id;
+        // id, cantidad, NOMBRE, PRECIO
+        this.productoVendido = productoVendido;
+        try{
+            this.subtotal = productoVendido.cantidad * productoVendido.precio;
+        }catch(error){
+            this.subtotal = 0;
+            console.log(error);
+            console.log("ADVERTENCIA! revisar etiquetas JSON de productos vendidos. Error en cantidad*precio");
+        }
+        this.siguiente = null;
+    }
+}
+
+class listaSimpleProductos{
+    constructor(){
+        this.primero = null;
+    }
+
+    insertarProductoVendido(productoVendido){
+        let nuevo = new nodoProductoVendido(productoVendido);
+        if(this.primero == null){
+            this.primero = nuevo;
+        }else{
+            let nodoActual = this.primero;
+            while(nodoActual.siguiente != null){
+                nodoActual = nodoActual.siguiente;
+            };
+            nodoActual.siguiente = nuevo;
+        }
+    }
+
+    obtenerTotal(){
+        let total = 0;
+        let nodoActual = this.primero;
+        while(nodoActual != null){
+            total += nodoActual.subtotal;
+            nodoActual = nodoActual.siguiente;
+        }
+        return total;
+    }
+
+    mostrarProductosVendidos(){
+        let nodoActual = this.primero;
+        console.log("***** Productos vendidos *****")
+        while(nodoActual != null){
+            console.log("-> " + nodoActual.dato);
+            console.log(`${nodoActual.productoVendido.nombre}`);
+            nodoActual = nodoActual.siguiente;
+        }
+    }
+}
+
+// TABLA HASH CON NODOS VENTA, CON TODAS LAS VENTAS REGISTRADAS EN UNA LISTA SIMPLE
+class nodoVenta{
+    constructor(venta, idVentaAutomatico){
+        // TODO Verificar que la etiqueta del vendedor venga así, "id"
+        this.dato = venta.id;
+        // vendedor, id (vendedor), cliente, array productos
+        this.venta = venta;
+        // total se calcula con la suma de los subtotales de los nodos nodoProductoVendido
+        this.total = 0;
+        this.idVenta = idVentaAutomatico;
+        this.productosVendidos = new listaSimpleProductos();
+    }
+}
+
+class hashCerradoVentas{
+    constructor(size, porcentajeMax){
+        this.listaVentas = this.iniciarLista(size);
+        this.clavesUsadas = 0;
+        this.size = size;
+        this.porcentajeMax = porcentajeMax;
+    }
+
+    iniciarLista(size){
+        let listaVentas = [];
+        for(let i = 0; i < size; i++){
+            listaVentas[i] = null;
+        }
+        return listaVentas;
+    }
+
+    insertarVenta(venta, idVenta = 0){
+        let nuevoNodo;
+        if(idVenta == 0){
+            nuevoNodo = new nodoVenta(venta, this.clavesUsadas + 1);
+        }else{
+            nuevoNodo = new nodoVenta(venta, idVenta);
+        }
+        // Insertando los productos vendidos en la lista simple del nodo venta
+        let arrProductosVendidos = venta.productos;
+        arrProductosVendidos.forEach(productoVendido => {
+            nuevoNodo.productosVendidos.insertarProductoVendido(productoVendido);
+        });
+        nuevoNodo.total = nuevoNodo.productosVendidos.obtenerTotal();
+        // console.log(`Total de venta: ${nuevoNodo.total}`);
+        // console.log(`ID generado automáticamente de venta: ${nuevoNodo.idVenta}`);
+        // nuevoNodo.productosVendidos.mostrarProductosVendidos();
+
+        // Obteniendo la posición de la venta en la tabla hash
+        let index = this.funcionDivision(nuevoNodo.dato);
+        if(this.listaVentas[index] == null){
+            this.listaVentas[index] = nuevoNodo;
+            this.clavesUsadas++;
+        }else{
+            //colisión
+            index = this.resolucionColisiones(index);
+            this.listaVentas[index] = nuevoNodo;
+            this.clavesUsadas++;
+        }
+        this.rehashing();
+    }
+
+    funcionDivision(dato){
+        return dato % this.size;
+    }
+
+    resolucionColisiones(index){
+        // Método de exploración cuadrática, moverse 0^2, 1^2, 3^2, ... posiciones, hasta encontrar un campo disponible
+        let newIndex = 0;
+        let i = 0;
+        let disponible = false;
+
+        while(!disponible){
+            newIndex = index + Math.pow(i, 2);
+            if(newIndex >= this.size){
+                newIndex = newIndex % this.size;
+            }
+            if(this.listaVentas[newIndex] == null){
+                disponible = true;
+            }
+            i++;
+        }
+        // Retornando el nuevo indice, en caso hayan ocurrido saltos debido a colisiones
+        return newIndex;
+    }
+
+    rehashing(){
+        let porcentajeUso = this.clavesUsadas*100/this.size;
+        if (porcentajeUso >= this.porcentajeMax){
+            this.printTabla();
+            console.log(this.generarDotHash());
+            console.log(">>> REHASHING MÉTODO NUMEROS PRIMOS")
+            // Buscando el siguiente número primo, este será el nuevo tamaño del arreglo
+            let esPrimo = false;
+            let newSize = this.size;
+            while(!esPrimo){
+                newSize++;
+                let divisiones = 0;
+                for(let i = newSize; i > 0; i--){
+                    if((newSize % i) == 0){
+                        // división exacta
+                        divisiones++;
+                    }
+                }
+                if(divisiones == 2){
+                    // es primo
+                    esPrimo = true;
+                }
+            }
+            console.log(`>>> NUEVO TAMAÑO: ${newSize}`);
+            // Creando el arreglo con el nuevo tamaño
+            let ventasAuxiliar = this.listaVentas;
+            this.size = newSize;
+            this.listaVentas = this.iniciarLista(newSize);
+            this.clavesUsadas = 0;
+            ventasAuxiliar.forEach(nodoVenta => {
+                if(nodoVenta != null){
+                    this.insertarVenta(nodoVenta.venta, nodoVenta.idVenta);
+                }
+            })
+        }else{
+            this.printTabla();
+            console.log(this.generarDotHash());
+        }
+    }
+
+    printTabla(){
+        let tabla = "["
+        this.listaVentas.forEach(nodoVenta => {
+            if(nodoVenta == null){
+                tabla += " --"
+            }else{
+                tabla += ` V(${nodoVenta.dato})`
+            }
+        });
+        tabla += ` ] ${this.clavesUsadas*100/this.size}% usado, ${this.porcentajeMax}% máximo`
+        console.log(tabla);
+    }
+
+    generarDotHash(){
+        let dotTabla = `digraph G {
+            subgraph cluster_0 {
+                label = "Tabla hash Ventas";
+                style=filled;
+                color=lightgrey;
+                fillcolor="palegreen";
+                edge[color="palegreen"];
+                node [shape = "box" fillcolor="white:grey" style="filled"];\n`
+        let pos = 0;
+        let enlacesHash = ""
+        this.listaVentas.forEach(nodoVenta => {
+            if(nodoVenta == null){
+                dotTabla += `node[shape=record label= "{${pos}}|<p0>"]${pos};\n`
+            }else{
+                dotTabla += `node[shape=record label= "{${pos}\\nId venta: ${nodoVenta.idVenta}\\nVendedor: ${nodoVenta.venta.vendedor}\\nCliente: ${nodoVenta.venta.cliente}\\nTotal: Q ${nodoVenta.total}}|<p0>"]${pos};\n`
+            }
+            if(pos==0){
+                enlacesHash += `${pos}`
+            }else{
+                enlacesHash += `->${pos}`
+            }
+            pos++;
+        });
+        enlacesHash += ";\n}\n"
+        dotTabla += enlacesHash
+
+        // Graficando las listas enlazadas de productos por venta
+        let clustersProductos = 0;
+        this.listaVentas.forEach(nodoVenta => {
+            if(nodoVenta != null){
+                clustersProductos += 1;
+                dotTabla += `	subgraph cluster_${clustersProductos} {
+                    label = "Productos vendidos";
+                    fillcolor="grey";
+                    style="filled";
+                    node [shape = "box" fillcolor="white" style="filled"];\n`
+                let contProductos = 0;
+                let enlacesProductos = ""
+                let rank = "{rank = same"
+                let nodoActual = nodoVenta.productosVendidos.primero;
+                while(nodoActual != null){
+                    contProductos += 1;
+                    dotTabla += `nodo${clustersProductos}${contProductos}[label= "[${nodoActual.dato}] ${nodoActual.productoVendido.nombre}\\nPrecio: Q ${nodoActual.productoVendido.precio}, Cantidad: ${nodoActual.productoVendido.cantidad}\\nSubtotal: Q ${nodoActual.subtotal}"];\n`
+                    if(contProductos == 1){
+                        enlacesProductos += `nodo${clustersProductos}${contProductos}`;
+                    }else{
+                        enlacesProductos += ` -> nodo${clustersProductos}${contProductos}`;
+                    }
+                    rank += `; nodo${clustersProductos}${contProductos}`
+                    nodoActual = nodoActual.siguiente;
+                }
+                enlacesProductos += ";\n"
+                rank += "};\n}\n"
+                dotTabla += enlacesProductos;
+                dotTabla += rank;
+            }
+        });
+
+        // Enlazando nodo hash con lista de productos
+        pos = 0;
+        let cluster = 0;
+        this.listaVentas.forEach(nodoVenta => {
+            if(nodoVenta != null && nodoVenta.productosVendidos.primero != null){
+                cluster += 1;
+                dotTabla += `${pos}:p0 -> nodo${cluster}1;\n`
+            }
+            pos++;
+        });
+        dotTabla += "}"
+        return dotTabla;
+    }
+}
+
 // *****************************************************************************************************************
 
 var productosArbolB = new arbolBProductos(5);
+var tablaHashVentas = new hashCerradoVentas(7, 50);
 
 // ******** RECUPERANDO ESTRUCTURAS DEL STORAGE *********
 function recuperarArbolB(){
@@ -410,6 +681,25 @@ function crearProductos(){
     }
 }
 
+function crearVentas(){
+    let strVentas = localStorage.getItem("ventasJSON");
+    if(strVentas != null){
+        let arrVentas = JSON.parse(strVentas);
+        
+        arrVentas.forEach(nuevaVenta => {
+            try{
+                tablaHashVentas.insertarVenta(nuevaVenta);
+            }catch(error){
+                console.log(error);
+                // TODO alert("Ocurrió un error al insertar ventas nuevas a la tabla hash. (Ver consola).")
+            }
+        });
+        localStorage.removeItem("ventasJSON");
+        // TODO actualizarVentasStorage();
+        alert("Se han cargado las ventas correctamente. Ver consola para más detalles.")
+    }
+}
+
 // ****** ACTUALIZACIÓN STORAGE CUANDO LAS ESTRUCTURAS CAMBIAN ******
 function actualizarProductosStorage(){
     let arbolBCircularJSON = CircularJSON.stringify(productosArbolB);
@@ -421,4 +711,9 @@ function actualizarProductosStorage(){
 function pruebasInventario(){
     console.log("****** ARBOL B DE PRODUCTOS ******");
     console.log(productosArbolB.graficarArbolB());
+}
+
+function pruebasVentas(){
+    console.log("***** TABLA HASH DE VENTAS ******");
+    console.log(tablaHashVentas.generarDotHash());
 }

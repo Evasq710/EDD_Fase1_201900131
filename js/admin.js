@@ -539,3 +539,48 @@ function cargaMasivaProductos(){
         alert("Debes seleccionar un archivo para la carga masiva.");
     }
 }
+
+// ----- VENTAS ------
+
+var inputFileVentas = document.getElementById('fileCargaVentas');
+inputFileVentas.addEventListener('change', function(e){
+    const reader = new FileReader();
+    reader.onload = function(){
+        localStorage.setItem("cargaVentasJSON", reader.result);
+    };
+    if(typeof inputFileVentas.files[0] !== 'undefined' && inputFileVentas.files[0].name.split('.')[1] == 'json'){
+        reader.readAsText(inputFileVentas.files[0], 'UTF-8');
+    }
+}, false);
+
+// CARGA MASIVA VENTAS
+function cargaMasivaVentas(){
+    if(typeof inputFileVentas.files[0] !== 'undefined'){
+        if(inputFileVentas.files[0].name.split('.')[1] == 'json'){
+            try{
+                let cargaVentasJSON = localStorage.getItem("cargaVentasJSON");
+                if(cargaVentasJSON != null){
+                    let objetoVentas = JSON.parse(cargaVentasJSON);
+                    try{
+                        localStorage.setItem("ventasJSON", JSON.stringify(objetoVentas.ventas));
+                        localStorage.removeItem("cargaVentasJSON");
+                        console.log("Se han guardado las ventasJSON correctamente...");
+                        crearVentas();
+                    }catch(error){
+                        console.log(error);
+                        alert("Ha surgido un error al intentar guardar a las ventas, verifique la estructura del JSON. (Ver consola)");
+                    }
+                }else{
+                    alert("Ha surgido un error al intentar guardar el JSON de ventas en el localStorage.");
+                }
+            }catch(error){
+                console.log(error);
+                alert("No ha sido posible realizar la carga masiva (Ver consola).");
+            }
+        }else {
+            alert("El archivo debe ser JSON (extensión .json)");
+        }
+    } else {
+        alert("Debes seleccionar un archivo para la carga masiva.");
+    }
+}
