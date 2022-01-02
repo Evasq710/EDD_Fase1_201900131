@@ -471,7 +471,8 @@
                   <div class="btn-group" role="group" aria-label="Basic outlined example">
                       <button type="button" class="btn btn-outline-primary" onclick="gestionNuevaVenta();">Carga manual de venta</button>
                       <button type="button" class="btn btn-outline-primary" onclick="gestionCargaVentas();">Carga masiva de ventas</button>
-                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteVentas();">Reporte de ventas</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteVentasGlobal(); generarGrafoVentasGlobal();">Reporte de ventas global</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteVentasIndividual();">Reporte de ventas individual</button>
                   </div>
                 </div>
                 <hr/>
@@ -534,22 +535,30 @@
                   <button type="button" class="btn btn-primary" onclick="pruebasVentas()" style="display: none;">PRUEBAS FASE II VENTAS</button>
                 </div>
 
-                <div class="form-group" id="reporteVentas" style="display: none;">
-                  <h2>Reporte de ventas</h2>
+                <div class="form-group" id="reporteVentasGlobal" style="display: none;">
+                  <h2>Reporte de ventas global</h2>
                   <hr/>
-                  <div class="form-group mb-3">
-                    <label for="nombresReporteVentas" class="form-label mt-4">Nombre del vendedor</label>
-                    <select class="form-select" id="nombresReporteVentas">
 
-                    </select>
+                  <div class="container-reporte" id="grafoVentasGlobal"></div>
+                  <hr/>
+                  <label for="textDotVentasGlobal" class="form-label mt-4">Código DOT del grafo</label>
+                  <textarea class="form-control" id="textDotVentasGlobal" rows="20" readonly></textarea>
+                </div>
+
+                <div class="form-group" id="reporteVentasIndividual" style="display: none;">
+                  <h2>Reporte de ventas individual</h2>
+                  <hr/>
+                  <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="idVendedorReporteVentas" min="0" placeholder="ID Vendedor">
+                    <label for="idVendedorReporteVentas">ID Vendedor</label>
                   </div>
-                  <button type="button" class="btn btn-primary" onclick="">Generar reporte de ventas</button>
+                  <button type="button" class="btn btn-primary" onclick="generarGrafoVentasIndividual();">Generar reporte de ventas de vendedor</button>
                   <hr/>
 
-                  <div class="container-reporte" id="grafoVentas"></div>
+                  <div class="container-reporte" id="grafoVentasIndividual"></div>
                   <hr/>
-                  <label for="textDotVentas" class="form-label mt-4">Código DOT del grafo</label>
-                  <textarea class="form-control" id="textDotVentas" rows="20" readonly></textarea>
+                  <label for="textDotVentasIndividual" class="form-label mt-4">Código DOT del grafo</label>
+                  <textarea class="form-control" id="textDotVentasIndividual" rows="20" readonly></textarea>
                 </div>
                 
               </div>

@@ -421,24 +421,35 @@ function gestionReporteProductos(){
 // CONTROL DE VISTAS VENTAS
 var formgroupCrearVenta = document.getElementById('nuevaVenta');
 var formgroupCargaVentas = document.getElementById('cargaVentas');
-var formgroupReporteVentas = document.getElementById('reporteVentas');
+var formgroupReporteVentasGlobal = document.getElementById('reporteVentasGlobal');
+var formgroupReporteVentasIndividual = document.getElementById('reporteVentasIndividual');
 
 function gestionNuevaVenta(){
     formgroupCrearVenta.style.display = 'block';
     formgroupCargaVentas.style.display = 'none';
-    formgroupReporteVentas.style.display = 'none';
+    formgroupReporteVentasGlobal.style.display = 'none';
+    formgroupReporteVentasIndividual.style.display = 'none';
 }
 
 function gestionCargaVentas(){
     formgroupCrearVenta.style.display = 'none';
     formgroupCargaVentas.style.display = 'block';
-    formgroupReporteVentas.style.display = 'none';
+    formgroupReporteVentasGlobal.style.display = 'none';
+    formgroupReporteVentasIndividual.style.display = 'none';
 }
 
-function gestionReporteVentas(){
+function gestionReporteVentasGlobal(){
     formgroupCrearVenta.style.display = 'none';
     formgroupCargaVentas.style.display = 'none';
-    formgroupReporteVentas.style.display = 'block';
+    formgroupReporteVentasGlobal.style.display = 'block';
+    formgroupReporteVentasIndividual.style.display = 'none';
+}
+
+function gestionReporteVentasIndividual(){
+    formgroupCrearVenta.style.display = 'none';
+    formgroupCargaVentas.style.display = 'none';
+    formgroupReporteVentasGlobal.style.display = 'none';
+    formgroupReporteVentasIndividual.style.display = 'block';
 }
 
 // CONTROL DE VISTAS RUTAS

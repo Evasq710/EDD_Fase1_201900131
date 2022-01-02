@@ -445,6 +445,7 @@ class hashCerradoVentas{
             this.clavesUsadas++;
         }else{
             //colisión
+            console.log(">> COLISIÓN, RESOLUCIÓN POR PRUEBA CUADRÁTICA")
             index = this.resolucionColisiones(index);
             this.listaVentas[index] = nuevoNodo;
             this.clavesUsadas++;
@@ -698,6 +699,18 @@ function crearVentas(){
         // TODO actualizarVentasStorage();
         alert("Se han cargado las ventas correctamente. Ver consola para más detalles.")
     }
+}
+
+function crearHashIndividual(idVendedor){
+    let hashIndividual = new hashCerradoVentas(7, 50);
+    tablaHashVentas.listaVentas.forEach(nodoVenta => {
+        if(nodoVenta != null){
+            if(nodoVenta.venta.id == idVendedor){
+                hashIndividual.insertarVenta(nodoVenta.venta, nodoVenta.idVenta);
+            }
+        }
+    });
+    return hashIndividual.generarDotHash();
 }
 
 // ****** ACTUALIZACIÓN STORAGE CUANDO LAS ESTRUCTURAS CAMBIAN ******
