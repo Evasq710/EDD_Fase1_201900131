@@ -644,3 +644,48 @@ function cargaMasivaVentas(){
         alert("Debes seleccionar un archivo para la carga masiva.");
     }
 }
+
+// ----- RUTAS ------
+
+var inputFileRutas = document.getElementById('fileCargaRutas');
+inputFileRutas.addEventListener('change', function(e){
+    const reader = new FileReader();
+    reader.onload = function(){
+        localStorage.setItem("cargaRutasJSON", reader.result);
+    };
+    if(typeof inputFileRutas.files[0] !== 'undefined' && inputFileRutas.files[0].name.split('.')[1] == 'json'){
+        reader.readAsText(inputFileRutas.files[0], 'UTF-8');
+    }
+}, false);
+
+// CARGA MASIVA RUTAS
+function cargaMasivaRutas(){
+    if(typeof inputFileRutas.files[0] !== 'undefined'){
+        if(inputFileRutas.files[0].name.split('.')[1] == 'json'){
+            try{
+                let cargaRutasJSON = localStorage.getItem("cargaRutasJSON");
+                if(cargaRutasJSON != null){
+                    let objetoRutas = JSON.parse(cargaRutasJSON);
+                    try{
+                        localStorage.setItem("rutasJSON", JSON.stringify(objetoRutas.rutas));
+                        localStorage.removeItem("cargaRutasJSON");
+                        console.log("Se han guardado las rutasJSON correctamente...");
+                        crearRutas();
+                    }catch(error){
+                        console.log(error);
+                        alert("Ha surgido un error al intentar guardar a las ventas, verifique la estructura del JSON. (Ver consola)");
+                    }
+                }else{
+                    alert("Ha surgido un error al intentar guardar el JSON de ventas en el localStorage.");
+                }
+            }catch(error){
+                console.log(error);
+                alert("No ha sido posible realizar la carga masiva (Ver consola).");
+            }
+        }else {
+            alert("El archivo debe ser JSON (extensión .json)");
+        }
+    } else {
+        alert("Debes seleccionar un archivo para la carga masiva.");
+    }
+}

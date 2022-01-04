@@ -660,10 +660,114 @@ class hashCerradoVentas{
     }
 }
 
+// ************* GRAFO DE RUTAS *************
+
+// El grafo se representará por medio de una lista enlazada
+class nodoBodega{
+    constructor(bodega, nodoPrincipal = true, distancia = null){
+        this.bodega = bodega;
+        this.siguiente = null;
+        this.distancia = distancia;
+        // Cada nodo principal (BODEGAS) tendra una lista con sus nodos adyacentes en ella (BODEGAS ADYACENTES)
+        if(nodoPrincipal){
+            this.listaAdyacentes = new listaAdyacentes();
+        }else{
+            // Si no es nodo principal, es nodo adyacente
+            this.listaAdyacentes = null;
+        }
+    }
+}
+
+class listaAdyacentes{
+    constructor(){
+        this.primero = null;
+    }
+
+    insertarBodegaAdyacente(bodega, distancia){
+        let nuevoNodo = new nodoBodega(bodega, false, distancia);
+        if(this.primero == null){
+            this.primero = nuevoNodo;
+        }else{
+            let existeAdyacente = false;
+            let actual = this.primero;
+            while(actual.siguiente != null){
+                if(actual.bodega.id == nuevoNodo.bodega.id){
+                    existeAdyacente = true;
+                    break;
+                }
+                actual = actual.siguiente;
+            }
+            if(!existeAdyacente && actual.bodega.id == nuevoNodo.bodega.id){
+                existeAdyacente = true;
+            }
+            if(!existeAdyacente){
+                actual.siguiente = nuevoNodo;
+            }
+        }
+    }
+}
+
+class grafo{
+    constructor(){
+        this.primero = null;
+    }
+
+    insertarNodo(bodega){
+        let nuevoNodo = new nodoBodega(bodega);
+        if(this.primero == null){
+            this.primero = nuevoNodo;
+        }else{
+            let actual = this.primero;
+            while(actual.siguiente != null){
+                actual = actual.siguiente;
+            }
+            actual.siguiente = nuevoNodo;
+        }
+    }
+
+    obtenerNodoBodega(idBodega){
+        let actual = this.primero;
+        while(actual != null){
+            if(actual.bodega.id == idBodega){
+                return actual;
+            }
+            actual =  actual.siguiente;
+        }
+        return null;
+    }
+
+    agregarAdyacente(idBodega, bodegaAdyacente, distancia){
+        let nodoPrincipal = this.obtenerNodoBodega(idBodega);
+        if(nodoPrincipal != null){
+            nodoPrincipal.listaAdyacentes.insertarBodegaAdyacente(bodegaAdyacente, distancia);
+            return true;
+        }
+        console.log(`La bodega con el id ${idBodega} no existe.`);
+        return false;
+    }
+
+    mostrarGrafo(){
+        let actual = this.primero;
+        console.log("***** LISTA DE ADYACENCIA DEL GRAFO *****");
+        while(actual != null){
+            console.log(`[ ${actual.bodega.id} ${actual.bodega.nombre}]`);
+            let actualAdyacente = actual.listaAdyacentes.primero;
+            while(actualAdyacente != null){
+                console.log(`  > ${actualAdyacente.bodega.id} ${actualAdyacente.bodega.nombre} a ${actualAdyacente.distancia}km`);
+                actualAdyacente = actualAdyacente.siguiente;
+            }
+            console.log("-------------------")
+            actual =  actual.siguiente;
+        }
+    }
+}
+
+
 // *****************************************************************************************************************
 
 var productosArbolB = new arbolBProductos(5);
 var tablaHashVentas = new hashCerradoVentas(7, 50);
+var grafoRutas = new grafo();
 
 // ******** RECUPERANDO ESTRUCTURAS DEL STORAGE *********
 function recuperarArbolB(){
@@ -806,6 +910,55 @@ function crearHashIndividual(idVendedor){
     return hashIndividual.generarDotHash();
 }
 
+function crearRutas(){
+    let strRutas = localStorage.getItem("rutasJSON");
+    if(strRutas != null){
+        let arrBodegas = JSON.parse(strRutas);
+        
+        // CREANDO LOS NODOS PRINCIPALES (BODEGAS)
+        arrBodegas.forEach(bodegaNueva => {
+            try{
+                let bodega = {
+                    "id": bodegaNueva.id,
+                    "nombre": bodegaNueva.nombre
+                }
+                console.log(`Insertando la bodega ${bodega.id}...`)
+                grafoRutas.insertarNodo(bodega);
+            }catch(error){
+                console.log(error);
+                // TODO alert("Ocurrió un error al insertar vendedores nuevos al árbol AVL. (Ver consola).")
+            }
+        });
+
+        // ENLISTANDO LOS NODOS O BODEGAS ADYACENTES DE CADA BODEGA NUEVA
+        arrBodegas.forEach(bodegaNueva => {
+            try{
+                let bodegaPrincipal = {
+                    "id": bodegaNueva.id,
+                    "nombre": bodegaNueva.nombre
+                }
+                bodegaNueva.adyacentes.forEach(bodegaAdyacente => {
+                    let bodegaAdyac = {
+                        "id": bodegaAdyacente.id,
+                        "nombre": bodegaAdyacente.nombre
+                    }
+                    grafoRutas.agregarAdyacente(bodegaNueva.id, bodegaAdyac, bodegaAdyacente.distancia);
+                    let bodegaAdExiste = grafoRutas.agregarAdyacente(bodegaAdyacente.id, bodegaPrincipal, bodegaAdyacente.distancia);
+                    if(!bodegaAdExiste){
+                        console.log(`Insertando la bodega adyacente ${bodegaAdyac.id}...`)
+                        grafoRutas.insertarNodo(bodegaAdyac);
+                        grafoRutas.agregarAdyacente(bodegaAdyacente.id, bodegaPrincipal, bodegaAdyacente.distancia);
+                    }
+                });
+            }catch(error){
+                console.log(error);
+                // TODO alert("Ocurrió un error al insertar vendedores nuevos al árbol AVL. (Ver consola).")
+            }
+        });
+        localStorage.removeItem("rutasJSON");
+        alert("Se han cargado las rutas correctamente. Ver consola para más detalles.")
+    }
+}
 // ****** ACTUALIZACIÓN STORAGE CUANDO LAS ESTRUCTURAS CAMBIAN ******
 function actualizarProductosStorage(){
     let arbolBCircularJSON = CircularJSON.stringify(productosArbolB);
@@ -828,4 +981,8 @@ function pruebasInventario(){
 function pruebasVentas(){
     console.log("***** TABLA HASH DE VENTAS ******");
     console.log(tablaHashVentas.generarDotHash());
+}
+
+function pruebasRutas(){
+    grafoRutas.mostrarGrafo();
 }
