@@ -552,6 +552,55 @@ function cargaMasivaProductos(){
 }
 
 // ----- VENTAS ------
+// REGISTRO INDIVIDUAL DE VENTAS
+function mostrarTablaProductos(){
+    let filasProductos = productosArbolB.obtenerTablaProductos();
+    let bodyTablaProductos = document.getElementById("bodyTablaProductos");
+    bodyTablaProductos.innerHTML = filasProductos;
+}
+
+var idVentaVendedor = document.getElementById("idVentaVendedor");
+var nombreVentaVendedor = document.getElementById("nombreVentaVendedor");
+var nombreVentaCliente = document.getElementById("nombreVentaCliente");
+
+function registrarNuevaVenta(){
+    if(idVentaVendedor.value != "" && nombreVentaVendedor.value != "" && nombreVentaCliente.value != ""){
+        let venta = []
+        let productos = []
+        let tablaProductos = document.getElementById("tablaProductos");
+        for (let i = 1, row; row = tablaProductos.rows[i]; i++) {
+            let inputCantidadVenta = document.getElementById(`producto${row.cells[0].innerText}CantidadVenta`);
+            if(inputCantidadVenta.value != "" && inputCantidadVenta.value != "0"){
+                productos.push({
+                    "id": parseInt(row.cells[0].innerText),
+                    "nombre": row.cells[1].innerText,
+                    "precio": parseFloat(row.cells[3].innerText),
+                    "cantidad": parseInt(inputCantidadVenta.value)
+                })
+            }
+        }
+        if(productos.length > 0){
+            venta.push({
+                "vendedor": nombreVentaVendedor.value,
+                "id": parseInt(idVentaVendedor.value),
+                "cliente": nombreVentaCliente.value,
+                "productos": productos
+            })
+            try{
+                localStorage.setItem("ventasJSON", JSON.stringify(venta));
+                console.log("Se ha guardado ventasJSON correctamente...");
+                crearVentas();
+            }catch(error){
+                console.log(error);
+                alert("Ha surgido un error al intentar guardar la venta, verifique la estructura del JSON. (Ver consola)");
+            }
+        }else{
+            alert("Debe ingresar la cantidad de los productos a registrar como vendidos")
+        }
+    }else{
+        alert("Todos los campos son obligatorios.");
+    }
+}
 
 var inputFileVentas = document.getElementById('fileCargaVentas');
 inputFileVentas.addEventListener('change', function(e){

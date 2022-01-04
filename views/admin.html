@@ -469,7 +469,7 @@
               <div class="inner-container">
                 <div class="container-btn">
                   <div class="btn-group" role="group" aria-label="Basic outlined example">
-                      <button type="button" class="btn btn-outline-primary" onclick="gestionNuevaVenta();">Carga manual de venta</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionNuevaVenta(); mostrarTablaProductos();">Carga manual de venta</button>
                       <button type="button" class="btn btn-outline-primary" onclick="gestionCargaVentas();">Carga masiva de ventas</button>
                       <button type="button" class="btn btn-outline-primary" onclick="gestionReporteVentasGlobal(); generarGrafoVentasGlobal();">Reporte de ventas global</button>
                       <button type="button" class="btn btn-outline-primary" onclick="gestionReporteVentasIndividual();">Reporte de ventas individual</button>
@@ -481,6 +481,10 @@
                   <h2>Datos de la nueva venta</h2>
                   <hr/>
                   <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="idVentaVendedor" min="0" placeholder="ID Vendedor">
+                    <label for="idVentaVendedor">ID Vendedor</label>
+                  </div>
+                  <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="nombreVentaVendedor" placeholder="Nombre vendedor">
                     <label for="nombreVentaVendedor">Nombre vendedor</label>
                   </div>
@@ -489,7 +493,7 @@
                     <label for="nombreVentaCliente">Nombre cliente</label>
                   </div>
 
-                  <table class="table table-hover" style="text-align: center;">
+                  <table class="table table-hover" id="tablaProductos" style="text-align: center;">
                     <thead>
                       <tr class="table-dark">
                         <th scope="col">ID Producto</th>
@@ -499,26 +503,16 @@
                         <th scope="col">Cantidad vendida</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <!-- <tr class="table-secondary">
-                        <th scope="row">1</th>
-                        <td>Colchones</td>
-                        <td>Q</td>
-                        <td>500</td>
-                        <td>50</td>
-                        <td>
-                          <input type="number" min="0" max="50" placeholder="0"/>
-                        </td>
-                      </tr> -->
+                    <tbody id="bodyTablaProductos">
                     </tbody>
                   </table>
 
-                  <div class="input-group mb-3">
+                  <!-- <div class="input-group mb-3">
                     <span class="input-group-text">Q</span>
                     <input type="number" class="form-control" id="totalVenta" placeholder="Total de venta" readonly>
-                  </div>
+                  </div> -->
 
-                  <button type="button" class="btn btn-primary" onclick="">Cargar venta</button>
+                  <button type="button" class="btn btn-primary" onclick="registrarNuevaVenta();">Cargar venta</button>
                 </div>
 
                 <div class="form-group" id="cargaVentas" style="display: none;">

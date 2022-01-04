@@ -264,6 +264,62 @@ class arbolBProductos{
         return this;
     }
 
+    obtenerTablaProductos(){
+        let cadena=""
+        cadena += this.obtenerFilasProductos(this.raiz);
+        return cadena;
+    }
+
+    obtenerFilasProductos(raizActual){
+        let cadena="";
+        if(raizActual != null){
+            if(raizActual.paginaEsHoja()){
+                // Graficando la página con todos los nodos
+                let auxiliar = raizActual.listaClaves.primero;
+                while(auxiliar!=null){
+                    cadena += `
+                    <tr class="table-secondary">
+                      <th scope="row">${auxiliar.dato}</th>
+                      <td>${auxiliar.producto.nombre}</td>
+                      <td>Q</td>
+                      <td>${auxiliar.producto.precio}</td>
+                      <td>${auxiliar.producto.cantidad}</td>
+                      <td>
+                        <input type="number" id="producto${auxiliar.dato}CantidadVenta" min="0" max="${auxiliar.producto.cantidad}" placeholder="0"/>
+                      </td>
+                    </tr>`
+                    auxiliar= auxiliar.siguiente;
+                }
+            }else{
+                // Graficando la página raiz con todos los nodos
+                let auxiliar = raizActual.listaClaves.primero;
+                while(auxiliar!=null){
+                    cadena += `
+                    <tr class="table-secondary">
+                      <th scope="row">${auxiliar.dato}</th>
+                      <td>${auxiliar.producto.nombre}</td>
+                      <td>Q</td>
+                      <td>${auxiliar.producto.precio}</td>
+                      <td>${auxiliar.producto.cantidad}</td>
+                      <td>
+                        <input type="number" id="producto${auxiliar.dato}CantidadVenta" min="0" max="${auxiliar.producto.cantidad}" placeholder="0"/>
+                      </td>
+                    </tr>`
+                    auxiliar= auxiliar.siguiente;
+                }
+    
+                //recorrer los hijos de cada nodo
+                auxiliar = raizActual.listaClaves.primero;
+                while(auxiliar != null){
+                    cadena+= this.obtenerFilasProductos(auxiliar.izquierda);
+                    auxiliar = auxiliar.siguiente;
+                }
+                cadena+= this.obtenerFilasProductos(raizActual.listaClaves.ultimo.derecha);
+            }  
+        }
+        return cadena;
+    }
+
     graficarArbolB(){
         let cadena="digraph arbolB{\nrankr=TB;\n";
         cadena+="graph[label=\"Arbol B Productos\"]; \nnode[shape = \"box\", style=\"filled\", fillcolor=\"lightblue\"];\n";
