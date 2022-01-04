@@ -631,7 +631,7 @@ function recuperacionAnidadaArbolB(paginaActual){
         Object.assign(listaAnidadaNodosB, listaSerializadaNodosB);
         paginaActual.listaClaves = listaAnidadaNodosB;
 
-        paginaActual.listaClaves.primero = recuperacionNodos(paginaActual.listaClaves.primero);
+        paginaActual.listaClaves.primero = recuperacionNodosProductos(paginaActual.listaClaves.primero);
         let nodoUltimo = paginaActual.listaClaves.primero;
         while(nodoUltimo != null && nodoUltimo.siguiente != null){
             nodoUltimo = nodoUltimo.siguiente;
@@ -651,12 +651,49 @@ function recuperacionAnidadaArbolB(paginaActual){
     return paginaActual;
 }
 
-function recuperacionNodos(nodo_actual){
+function recuperacionNodosProductos(nodo_actual){
     if(nodo_actual != null){
         let nodoAnidado = new nodoB(nodo_actual.producto);
         Object.assign(nodoAnidado, nodo_actual);
         nodo_actual = nodoAnidado;
-        nodo_actual.siguiente = recuperacionNodos(nodo_actual.siguiente);
+        nodo_actual.siguiente = recuperacionNodosProductos(nodo_actual.siguiente);
+        return nodo_actual;
+    }
+    return nodo_actual;
+}
+
+function recuperarTablaHash(){
+    let tablaHashString = localStorage.getItem("ventas");
+    if(tablaHashString != null){
+        let tablaHashJSON = JSON.parse(tablaHashString);
+        let tablaHashCircularJSON = CircularJSON.parse(tablaHashJSON); 
+        // recuperando tabla hash
+        Object.assign(tablaHashVentas, tablaHashCircularJSON);
+        tablaHashVentas.listaVentas.forEach(function(nodoSerializado, index){
+            if(this[index] != null){
+                // recuperadno nodoVenta del array listaVentas
+                let nodoRecuperado = new nodoVenta(this[index].venta, this[index].idVenta);
+                Object.assign(nodoRecuperado, this[index]);
+                this[index] = nodoRecuperado;
+
+                // recuperando lista simple de productos vendidos
+                let listaRecuperada = new listaSimpleProductos();
+                Object.assign(listaRecuperada, this[index].productosVendidos)
+                this[index].productosVendidos = listaRecuperada;
+                
+                // recuperando cada nodoProductoVendido de la lista simple de productos
+                this[index].productosVendidos.primero = recuperacionNodosVentas(this[index].productosVendidos.primero);
+            }
+        }, tablaHashVentas.listaVentas);
+    }
+}
+
+function recuperacionNodosVentas(nodo_actual){
+    if(nodo_actual != null){
+        let nodoAnidado = new nodoProductoVendido(nodo_actual.productoVendido);
+        Object.assign(nodoAnidado, nodo_actual);
+        nodo_actual = nodoAnidado;
+        nodo_actual.siguiente = recuperacionNodosVentas(nodo_actual.siguiente);
         return nodo_actual;
     }
     return nodo_actual;
@@ -696,7 +733,7 @@ function crearVentas(){
             }
         });
         localStorage.removeItem("ventasJSON");
-        // TODO actualizarVentasStorage();
+        actualizarVentasStorage();
         alert("Se han cargado las ventas correctamente. Ver consola para más detalles.")
     }
 }
@@ -718,6 +755,12 @@ function actualizarProductosStorage(){
     let arbolBCircularJSON = CircularJSON.stringify(productosArbolB);
     let arbolBString = JSON.stringify(arbolBCircularJSON);
     localStorage.setItem("productos", arbolBString);
+}
+
+function actualizarVentasStorage(){
+    let tablaHashCircularJSON = CircularJSON.stringify(tablaHashVentas);
+    let tablaHashString = JSON.stringify(tablaHashCircularJSON);
+    localStorage.setItem("ventas", tablaHashString);
 }
 
 // *********** PRUEBAS PERMANENCIA DE DATOS ***********
