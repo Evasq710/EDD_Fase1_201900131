@@ -17,7 +17,7 @@
 
     <title>ERPS Admin</title>
 </head>
-<body onload="recuperarAVL(); recuperarABB(); recuperarArbolB(); recuperarTablaHash(); actualizarSelectVendedores(); actualizarSelectClientes(); actualizarSelectProveedores();">
+<body onload="recuperarAVL(); recuperarABB(); recuperarArbolB(); recuperarTablaHash(); recuperarGrafo(); actualizarSelectVendedores(); actualizarSelectClientes(); actualizarSelectProveedores();">
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
@@ -563,7 +563,7 @@
                 <div class="container-btn">
                   <div class="btn-group" role="group" aria-label="Basic outlined example">
                       <button type="button" class="btn btn-outline-primary" onclick="gestionCargaRutas();">Carga masiva de rutas</button>
-                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteRutas();">Reporte de rutas</button>
+                      <button type="button" class="btn btn-outline-primary" onclick="gestionReporteRutas(); generarGrafoRutas();">Reporte de rutas</button>
                       <button type="button" class="btn btn-outline-primary" onclick="gestionRutaOptima();">Rutas óptimas</button>
                   </div>
                 </div>
@@ -580,14 +580,14 @@
                   </div>
 
                   <button type="button" class="btn btn-primary" onclick="cargaMasivaRutas()">Cargar rutas</button>
-                  <button type="button" class="btn btn-primary" onclick="pruebasRutas()">PRUEBAS FASE II RUTAS</button>
+                  <button type="button" class="btn btn-primary" onclick="pruebasRutas()" style="display: none;">PRUEBAS FASE II RUTAS</button>
                 </div>
 
                 <div class="form-group" id="reporteRutas" style="display: none;">
                   <h2>Vista de rutas</h2>
                   <hr/>
 
-                  <div class="container-reporte" id="grafoRutas"></div>
+                  <div class="container-reporte" id="container-grafoRutas"></div>
                   <hr/>
                   <label for="textDotRutas" class="form-label mt-4">Código DOT del grafo</label>
                   <textarea class="form-control" id="textDotRutas" rows="20" readonly></textarea>

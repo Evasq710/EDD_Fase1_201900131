@@ -84,3 +84,34 @@ function generarGrafoVentasIndividual(){
         alert("Debe ingresar el id del vendedor.")
     }
 }
+
+// RUTAS
+
+var containerGrafoRutas = document.getElementById('container-grafoRutas');
+var textAreaDotRutas = document.getElementById('textDotRutas');
+
+function generarGrafoRutas(){
+    containerGrafoRutas.innerHTML = ""
+    textAreaDotRutas.innerHTML = ""
+    if(grafoRutas.primero != null){
+        let DOTstring = grafoRutas.generarDotGrafo();
+        let parsedData = vis.parseDOTNetwork(DOTstring);
+        let data = {
+            nodes: parsedData.nodes,
+            edges: parsedData.edges
+            }
+        let options = parsedData.options;
+        options.nodes = {
+            color: 'lightblue'
+        }  
+        let grafoGeneradoRutas = new vis.Network(containerGrafoRutas, data, options);
+        grafoGeneradoRutas.setOptions({
+            physics: {
+                enabled: false
+            }
+        });
+        textAreaDotRutas.innerHTML = DOTstring;
+    }else{
+        alert("No se han ingresado aún rutas al sistema.")
+    }
+}

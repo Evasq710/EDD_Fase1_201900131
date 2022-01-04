@@ -760,6 +760,33 @@ class grafo{
             actual =  actual.siguiente;
         }
     }
+
+    generarDotGrafo(){
+        // NO DIRIGIDO
+        let cadena= "graph grafo{\nlabel = \"Grafo Rutas\";\nnode [fillcolor=\"lightblue\" style=\"filled\"];\nrankdir=\"LR\"\n"
+        let nodoActual = this.primero;
+        while(nodoActual != null){
+            cadena += `n${nodoActual.bodega.id}[label= \"[${nodoActual.bodega.id}] ${nodoActual.bodega.nombre}\"];\n`
+            nodoActual = nodoActual.siguiente;
+        }
+        // relaciones entre nodos
+        let relaciones = []
+        nodoActual = this.primero;
+        while(nodoActual != null){
+            let adyacenteActual = nodoActual.listaAdyacentes.primero;
+            while(adyacenteActual != null){
+                // Evitando que se grafiquen dobles enlaces
+                if(relaciones.filter(relacion => relacion == `n${adyacenteActual.bodega.id} -- n${nodoActual.bodega.id}`).length == 0){
+                    cadena += `n${nodoActual.bodega.id} -- n${adyacenteActual.bodega.id} [label=\"${adyacenteActual.distancia}km\"];\n`
+                    relaciones.push(`n${nodoActual.bodega.id} -- n${adyacenteActual.bodega.id}`);
+                }
+                adyacenteActual = adyacenteActual.siguiente;
+            }
+            nodoActual = nodoActual.siguiente;
+        }
+        cadena += "}"
+        return cadena;
+    }
 }
 
 
@@ -859,6 +886,52 @@ function recuperacionNodosVentas(nodo_actual){
     return nodo_actual;
 }
 
+function recuperarGrafo(){
+    let grafoRutasString = localStorage.getItem("rutas");
+    if(grafoRutasString != null){
+        // recuperando grafo
+        let grafoRutasJSON = JSON.parse(grafoRutasString);
+        let grafoRutasCircularJSON = CircularJSON.parse(grafoRutasJSON);
+        Object.assign(grafoRutas, grafoRutasCircularJSON);
+
+        // recuperando nodosBodega
+        grafoRutas.primero = recuperacionNodosBodegas(grafoRutas.primero);
+        
+        let nodoBodegaActual = grafoRutas.primero;
+        while(nodoBodegaActual != null){
+            if(nodoBodegaActual.listaAdyacentes != null){
+                // recuperando lista de bodegas adyacentes
+                let listaAdyacentesRecuperada = new listaAdyacentes();
+                Object.assign(listaAdyacentesRecuperada, nodoBodegaActual.listaAdyacentes)
+                nodoBodegaActual.listaAdyacentes = listaAdyacentesRecuperada;
+
+                // recuperando cada bodega adyacente de la listaAdyacentes
+                nodoBodegaActual.listaAdyacentes.primero = recuperacionNodosBodegas(nodoBodegaActual.listaAdyacentes.primero);
+            }
+            nodoBodegaActual = nodoBodegaActual.siguiente;
+        }
+    }
+}
+
+function recuperacionNodosBodegas(nodo_actual){
+    if(nodo_actual != null){
+        let nodoAnidado;
+        if(nodo_actual.listaAdyacentes == null){
+            // es adyacente
+            nodoAnidado = new nodoBodega(nodo_actual.bodega, false, nodo_actual.distancia);
+        }else{
+            // es nodo principal, tiene bodegas adyacentes
+            nodoAnidado = new nodoBodega(nodo_actual.bodega);
+        }
+        Object.assign(nodoAnidado, nodo_actual);
+        nodo_actual = nodoAnidado;
+        nodo_actual.siguiente = recuperacionNodosBodegas(nodo_actual.siguiente);
+        return nodo_actual;
+    }
+    return nodo_actual;
+}
+
+
 // ******** CREACIÓN E INSERCIÓN DE DATOS *********
 function crearProductos(){
     let strProductos = localStorage.getItem("productosJSON");
@@ -956,6 +1029,7 @@ function crearRutas(){
             }
         });
         localStorage.removeItem("rutasJSON");
+        actualizarRutasStorage();
         alert("Se han cargado las rutas correctamente. Ver consola para más detalles.")
     }
 }
@@ -972,6 +1046,12 @@ function actualizarVentasStorage(){
     localStorage.setItem("ventas", tablaHashString);
 }
 
+function actualizarRutasStorage(){
+    let grafoRutasCircularJSON = CircularJSON.stringify(grafoRutas);
+    let grafoRutasString = JSON.stringify(grafoRutasCircularJSON);
+    localStorage.setItem("rutas", grafoRutasString);
+}
+
 // *********** PRUEBAS PERMANENCIA DE DATOS ***********
 function pruebasInventario(){
     console.log("****** ARBOL B DE PRODUCTOS ******");
@@ -985,4 +1065,5 @@ function pruebasVentas(){
 
 function pruebasRutas(){
     grafoRutas.mostrarGrafo();
+    console.log(grafoRutas.generarDotGrafo());
 }
