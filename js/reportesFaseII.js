@@ -202,3 +202,35 @@ function generarGrafoRutaOptima(listaIdsRuta, distanciaRecorrida){
         alert("No se han ingresado aún rutas al sistema.")
     }
 }
+
+// BLOCKCHAIN
+
+var containerBlockchain = document.getElementById('grafoBlockchain');
+var textAreaDotBlockchain = document.getElementById('textDotBlockchain');
+
+function generarGrafoBlockchain(){
+    try{
+        containerBlockchain.innerHTML = ""
+        textAreaDotBlockchain.innerHTML = ""
+        let DOTstring = blockchainTransacciones.generarDotBlockchain();
+        let parsedData = vis.parseDOTNetwork(DOTstring);
+        let data = {
+            nodes: parsedData.nodes,
+            edges: parsedData.edges
+            }
+        let options = parsedData.options;
+        options.nodes = {
+            color: 'lightblue'
+        }  
+        let grafoBlockchain = new vis.Network(containerBlockchain, data, options);
+        grafoBlockchain.setOptions({
+            physics: {
+                enabled: false
+            }
+        });
+        textAreaDotBlockchain.innerHTML = DOTstring;
+    }catch(error){
+        console.log(error);
+        alert("Ocurrió un error en la generación del grafo de blockchain (Ver consola).")
+    }
+}

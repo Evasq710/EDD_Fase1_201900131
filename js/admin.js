@@ -59,7 +59,6 @@ function registrarUsuario(){
                 inputEdad.value = "";
                 inputCorreo.value = "";
                 inputPass.value = "";
-                location.reload();
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al vendedor, verifique la estructura del JSON. (Ver consola)");
@@ -90,7 +89,6 @@ function registrarUsuario(){
                 inputId.value = "";
                 inputNombre.value =  "";
                 inputCorreo.value = "";
-                location.reload();
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al cliente, verifique la estructura del JSON. (Ver consola)");
@@ -122,7 +120,6 @@ function registrarUsuario(){
                 inputDireccion.value = "";
                 inputTelefono.value = "";
                 inputCorreo.value = "";
-                location.reload();
             }catch(error){
                 console.log(error);
                 alert("Ha surgido un error al intentar guardar al proveedor, verifique la estructura del JSON. (Ver consola)");
@@ -313,7 +310,6 @@ function cargaMasiva(){
                             localStorage.removeItem("cargaJSON");
                             console.log("Se han guardado los vendedoresJSON correctamente...");
                             crearVendedores();
-                            location.reload();
                         }catch(error){
                             console.log(error);
                             alert("Ha surgido un error al intentar guardar a los vendedores, verifique la estructura del JSON. (Ver consola)");
@@ -331,7 +327,6 @@ function cargaMasiva(){
                                 localStorage.removeItem("cargaJSON");
                                 console.log("Se han guardado los clientesJSON correctamente...");
                                 crearClientes();
-                                location.reload();
                             }catch(error){
                                 console.log(error);
                                 alert("Ha surgido un error al intentar guardar a los clientes, verifique la estructura del JSON. (Ver consola)");
@@ -351,7 +346,6 @@ function cargaMasiva(){
                             localStorage.removeItem("cargaJSON");
                             console.log("Se han guardado los proveedoresJSON correctamente...");
                             crearProveedores();
-                            location.reload();
                         }catch(error){
                             console.log(error);
                             alert("Ha surgido un error al intentar guardar a los proveedores, verifique la estructura del JSON. (Ver consola)");
@@ -369,7 +363,6 @@ function cargaMasiva(){
                                 localStorage.removeItem("cargaJSON");
                                 console.log("Se han guardado los eventosJSON correctamente...");
                                 crearEventos();
-                                location.reload();
                             }catch(error){
                                 console.log(error);
                                 alert("Ha surgido un error al intentar guardar a los eventos, verifique la estructura del JSON. (Ver consola)");
@@ -473,6 +466,20 @@ function gestionRutaOptima(){
     formgroupCargaRutas.style.display = 'none';
     formgroupReporteRutas.style.display = 'none';
     formgroupRutaOptima.style.display = 'block';
+}
+
+// CONTROL DE VISTAS BLOCKCHAIN
+var formgroupConfigBlockchain = document.getElementById('configBlockchain');
+var formgroupReporteBlockchain = document.getElementById('reporteBlockchain');
+
+function gestionConfigBlockchain(){
+    formgroupConfigBlockchain.style.display = 'block';
+    formgroupReporteBlockchain.style.display = 'none';
+}
+
+function gestionReporteBlockchain(){
+    formgroupConfigBlockchain.style.display = 'none';
+    formgroupReporteBlockchain.style.display = 'block';
 }
 
 // ----- INVENTARIO ------
@@ -688,4 +695,27 @@ function cargaMasivaRutas(){
     } else {
         alert("Debes seleccionar un archivo para la carga masiva.");
     }
+}
+
+// -------- BLOCKCHAIN ----------
+
+function dificultadActual(){
+    document.getElementById("dificultadActual").value = blockchainTransacciones.dificultad.toString();
+}
+
+function actualizarDificultad(){
+    let inputNuevaDificultad = document.getElementById("nuevaDificultad");
+    if(inputNuevaDificultad.value != ""){
+        blockchainTransacciones.dificultad = parseInt(inputNuevaDificultad.value);
+        dificultadActual();
+        alert(`Dificultad de la prueba de trabajo actualizada a: ${blockchainTransacciones.dificultad}`)
+        inputNuevaDificultad.value = "";
+    }else{
+        alert("Debe ingresar la nueva dificultad para poder actualizarla.")
+    }
+}
+
+function generarNuevoBloque(){
+    blockchainTransacciones.crearNuevoBloque();
+    alert("Bloque de transacciones generado exitosamente.");
 }

@@ -870,12 +870,100 @@ class grafo{
     }
 }
 
+// ************* BLOCKCHAIN DE TRANSACCIONES *************
+
+class bloque {
+    constructor(indice, data, hashAnterior, dificultad) {
+        let fechaActual = new Date()
+        let fecha = fechaActual.getDate() + '-' + (fechaActual.getMonth() + 1) + '-' + fechaActual.getFullYear();
+        var hora = fechaActual.getHours() + ':' + fechaActual.getMinutes() + ':' + fechaActual.getSeconds();
+        this.fecha = `${fecha}::${hora}`;
+
+        this.indice = indice;
+        this.data = data;
+        this.hashAnterior = hashAnterior;
+        this.hash = this.crearHash();
+        this.nonce = 0;
+
+        console.log(`Hash válido encontrado: ${this.pruebaDeTrabajo(dificultad)}`);
+    }
+
+    crearHash() {
+        let shaObj = new jsSHA("SHA-256", "TEXT", { encoding: "UTF8" });
+        shaObj.update(this.indice + this.fecha + this.previusHash + this.data + this.nonce);
+        return shaObj.getHash("HEX");
+    }
+
+    pruebaDeTrabajo(dificultad) {
+        while (this.hash.substring(0, dificultad) !== Array(dificultad + 1).join("0")) {
+            // Si entra aquí, no están los ceros que se esperan al principio
+            // recalculando el hash, al cambiar la prueba de trabajo (nonce)
+            this.nonce++;
+            this.hash = this.crearHash();
+        }
+        // hash que cumple con la condición de los ceros iniciales
+        return this.hash;
+    }
+}
+
+class cadena {
+    constructor() {
+        this.indice = 0;
+        this.cadena = [];
+        this.dificultad = 4;
+        this.cadena.push(this.bloqueGenesis());
+    }
+
+    bloqueGenesis() {
+        let ceros = "";
+        for(let i = 0; i < this.dificultad; i++){
+            ceros += "0";
+        }
+        let genesis = new bloque(this.indice, "Bloque Genesis", ceros, this.dificultad);
+        this.indice++;
+        return genesis;
+    }
+
+    crearNuevoBloque() {
+        // obteniendo las transacciones realizadas, almacenadas en el storage
+        let strDataVentas = localStorage.getItem("dataVentas");
+        let data = [];
+        if(strDataVentas != null){
+            data = strDataVentas;
+        }
+        localStorage.removeItem("dataVentas");
+
+        let nuevoBloque = new bloque(this.indice, data, this.cadena[this.indice - 1].hash, this.dificultad);
+        this.indice++;
+        this.cadena.push(nuevoBloque);
+    }
+
+    recorrer() {
+        for (let block of this.cadena) {
+            console.log(block);
+        }
+    }
+
+    generarDotBlockchain() {
+        let cadena = 'digraph G {\nlabel="Blockchain transacciones"\nnode [shape=record, style="filled", fillcolor="grey:lightblue"];\n'
+        let enlaces = "";
+        for (let block of this.cadena) {
+            cadena += `block${block.indice}[label="{Indice:|Fecha:|Data:|Hash anterior:|Hash:|Nonce}|{{${block.indice}}|{${block.fecha}}|{${block.data}}|{${block.hashAnterior}}|{${block.hash}}|{${block.nonce}}}"];\n`
+            if(enlaces == "") enlaces += `block${block.indice}`
+            else enlaces += ` -> block${block.indice}`
+        }
+        enlaces += ";\n}"
+        cadena += enlaces;
+        return cadena;
+    }
+}
 
 // *****************************************************************************************************************
 
 var productosArbolB = new arbolBProductos(5);
 var tablaHashVentas = new hashCerradoVentas(7, 50);
 var grafoRutas = new grafo();
+var blockchainTransacciones = new cadena();
 
 // ******** RECUPERANDO ESTRUCTURAS DEL STORAGE *********
 function recuperarArbolB(){
@@ -1046,6 +1134,14 @@ function crearVentas(){
                 // TODO alert("Ocurrió un error al insertar ventas nuevas a la tabla hash. (Ver consola).")
             }
         });
+        let strDataVentas = localStorage.getItem("dataVentas");
+        if(strDataVentas == null){
+            localStorage.setItem("dataVentas", JSON.stringify(arrVentas));
+        }else{
+            let arrDataVentas = JSON.parse(strDataVentas);
+            arrDataVentas.concat(arrVentas);
+            localStorage.setItem("dataVentas", JSON.stringify(arrDataVentas));
+        }
         localStorage.removeItem("ventasJSON");
         actualizarVentasStorage();
         alert("Se han cargado las ventas correctamente. Ver consola para más detalles.")
