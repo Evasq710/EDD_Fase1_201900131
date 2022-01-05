@@ -787,6 +787,87 @@ class grafo{
         cadena += "}"
         return cadena;
     }
+    
+    costoUniforme(idBodegaInicio, idBodegaFin){
+        let lista = [[idBodegaInicio, 0, null]]; // [0] -> id de la bodega, [1] -> La distancia acumulada, [2] -> idAntecesor
+        let recorrido = [];
+        while (lista.length > 0){
+            // console.log("Lista ordenada: ")
+            // lista.forEach(element => {
+            //     console.log(element)
+            // })
+            // console.log("----------------------")
+            var id_distancia_antecesor = lista.shift(); // shift => pop(0)
+            recorrido.push(id_distancia_antecesor);
+            // console.log("Nodo bodega actual (shift o pop(0)): ")
+            // console.log(id_distancia_antecesor);
+            // console.log("----------------------")
+            if (id_distancia_antecesor[0] == idBodegaFin) {
+                console.log("SOLUCIÓN!!");
+                return recorrido;
+            }
+            var sucesores = this.obtenerSucesores(id_distancia_antecesor);
+            if(sucesores != null){
+                // console.log("Sucesores de nodo actual: ")
+                // sucesores.forEach(element => {
+                //     console.log(element)
+                // })
+                // console.log("----------------------")
+                lista = sucesores.concat(lista);
+                lista = lista.sort( function(a,b) { return a[1] - b[1] });
+            }
+        }
+        console.log("SIN SOLUCIÓN :(")
+        return null;
+    }
+
+    obtenerSucesores(idBodega_distancia_antecesor){ // [0] -> id de la bodega, [1] -> La distancia acumulada, [2] -> idAntecesor
+        let sucesores = [];
+        let bodegaActual = this.primero;
+        while(bodegaActual != null){
+            if(bodegaActual.bodega.id == idBodega_distancia_antecesor[0]){
+                let adyacente = bodegaActual.listaAdyacentes.primero;
+                while(adyacente != null){
+                    sucesores.push([adyacente.bodega.id, idBodega_distancia_antecesor[1] + adyacente.distancia, idBodega_distancia_antecesor[0]])
+                    adyacente = adyacente.siguiente;
+                }
+                return sucesores;
+            }
+            bodegaActual = bodegaActual.siguiente;
+        }
+        return null;
+    }
+
+    generarDotGrafoRutaOptima(listaIdsRuta){
+        // NO DIRIGIDO
+        let cadena= "graph grafo{\nlabel = \"Grafo Rutas\";\nnode [fillcolor=\"lightblue\" style=\"filled\"];\nrankdir=\"LR\"\n"
+        let nodoActual = this.primero;
+        while(nodoActual != null){
+            if(listaIdsRuta.filter(idRuta => idRuta == nodoActual.bodega.id).length > 0){
+                cadena += `n${nodoActual.bodega.id}[label= \"[${nodoActual.bodega.id}] ${nodoActual.bodega.nombre}\", fillcolor=\"green\"];\n`
+            }else{
+                cadena += `n${nodoActual.bodega.id}[label= \"[${nodoActual.bodega.id}] ${nodoActual.bodega.nombre}\"];\n`
+            }
+            nodoActual = nodoActual.siguiente;
+        }
+        // relaciones entre nodos
+        let relaciones = []
+        nodoActual = this.primero;
+        while(nodoActual != null){
+            let adyacenteActual = nodoActual.listaAdyacentes.primero;
+            while(adyacenteActual != null){
+                // Evitando que se grafiquen dobles enlaces
+                if(relaciones.filter(relacion => relacion == `n${adyacenteActual.bodega.id} -- n${nodoActual.bodega.id}`).length == 0){
+                    cadena += `n${nodoActual.bodega.id} -- n${adyacenteActual.bodega.id} [label=\"${adyacenteActual.distancia}km\"];\n`
+                    relaciones.push(`n${nodoActual.bodega.id} -- n${adyacenteActual.bodega.id}`);
+                }
+                adyacenteActual = adyacenteActual.siguiente;
+            }
+            nodoActual = nodoActual.siguiente;
+        }
+        cadena += "}"
+        return cadena;
+    }
 }
 
 
