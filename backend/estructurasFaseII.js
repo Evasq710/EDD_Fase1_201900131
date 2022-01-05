@@ -601,7 +601,7 @@ class hashCerradoVentas{
             if(nodoVenta == null){
                 dotTabla += `node[shape=record label= "{${pos}}|<p0>"]${pos};\n`
             }else{
-                dotTabla += `node[shape=record label= "{${pos}\\nId venta: ${nodoVenta.idVenta}\\nVendedor: ${nodoVenta.venta.vendedor}\\nCliente: ${nodoVenta.venta.cliente}\\nTotal: Q ${nodoVenta.total}}|<p0>"]${pos};\n`
+                dotTabla += `node[shape=record label= "{${pos}\\nId venta: ${nodoVenta.idVenta}\\nVendedor: ${nodoVenta.venta.vendedor} [${nodoVenta.venta.id}]\\nCliente: ${nodoVenta.venta.cliente}\\nTotal: Q ${nodoVenta.total}}|<p0>"]${pos};\n`
             }
             if(pos==0){
                 enlacesHash += `${pos}`
