@@ -873,19 +873,28 @@ class grafo{
 // ************* BLOCKCHAIN DE TRANSACCIONES *************
 
 class bloque {
-    constructor(indice, data, hashAnterior, dificultad) {
-        let fechaActual = new Date()
-        let fecha = fechaActual.getDate() + '-' + (fechaActual.getMonth() + 1) + '-' + fechaActual.getFullYear();
-        var hora = fechaActual.getHours() + ':' + fechaActual.getMinutes() + ':' + fechaActual.getSeconds();
-        this.fecha = `${fecha}::${hora}`;
-
-        this.indice = indice;
-        this.data = data;
-        this.hashAnterior = hashAnterior;
-        this.hash = this.crearHash();
-        this.nonce = 0;
-
-        console.log(`Hash válido encontrado: ${this.pruebaDeTrabajo(dificultad)}`);
+    constructor(indice, data, hashAnterior, dificultad, recuperado = false, fecha = null, hash = null, nonce = null) {
+        if(recuperado){
+            this.fecha = fecha;
+            this.indice = indice;
+            this.data = data;
+            this.hashAnterior = hashAnterior;
+            this.hash = hash;
+            this.nonce = nonce;
+        }else{
+            let fechaActual = new Date()
+            let fecha = fechaActual.getDate() + '-' + (fechaActual.getMonth() + 1) + '-' + fechaActual.getFullYear();
+            var hora = fechaActual.getHours() + ':' + fechaActual.getMinutes() + ':' + fechaActual.getSeconds();
+            this.fecha = `${fecha}::${hora}`;
+    
+            this.indice = indice;
+            this.data = data;
+            this.hashAnterior = hashAnterior;
+            this.hash = this.crearHash();
+            this.nonce = 0;
+    
+            console.log(`Hash válido encontrado: ${this.pruebaDeTrabajo(dificultad)}`);
+        }
     }
 
     crearHash() {
@@ -906,11 +915,14 @@ class bloque {
     }
 }
 
-class cadena {
+class cadenaBloques {
     constructor() {
         this.indice = 0;
         this.cadena = [];
         this.dificultad = 4;
+    }
+
+    crearGenesis(){
         this.cadena.push(this.bloqueGenesis());
     }
 
@@ -933,9 +945,15 @@ class cadena {
         }
         localStorage.removeItem("dataVentas");
 
+        if(this.cadena.length == 0){
+            this.crearGenesis();
+        }
+
         let nuevoBloque = new bloque(this.indice, data, this.cadena[this.indice - 1].hash, this.dificultad);
         this.indice++;
         this.cadena.push(nuevoBloque);
+
+        actualizarBlockchainStorage();
     }
 
     recorrer() {
@@ -945,10 +963,18 @@ class cadena {
     }
 
     generarDotBlockchain() {
+        if(this.cadena.length == 0){
+            this.crearGenesis();
+            actualizarBlockchainStorage();
+        }
+
         let cadena = 'digraph G {\nlabel="Blockchain transacciones"\nnode [shape=record, style="filled", fillcolor="grey:lightblue"];\n'
         let enlaces = "";
         for (let block of this.cadena) {
-            cadena += `block${block.indice}[label="{Indice:|Fecha:|Data:|Hash anterior:|Hash:|Nonce}|{{${block.indice}}|{${block.fecha}}|{${block.data}}|{${block.hashAnterior}}|{${block.hash}}|{${block.nonce}}}"];\n`
+            let dataBlock = block.data.toString();
+            dataBlock = dataBlock.replace(/\"/g, "").replace(/\{/g, "\\{").replace(/\}/g, "\\}");
+
+            cadena += `block${block.indice}[label="{Indice:|Fecha:|Data:|Hash anterior:|Hash:|Nonce}|{{${block.indice}}|{${block.fecha}}|{${dataBlock}}|{${block.hashAnterior}}|{${block.hash}}|{${block.nonce}}}"];\n`
             if(enlaces == "") enlaces += `block${block.indice}`
             else enlaces += ` -> block${block.indice}`
         }
@@ -963,7 +989,7 @@ class cadena {
 var productosArbolB = new arbolBProductos(5);
 var tablaHashVentas = new hashCerradoVentas(7, 50);
 var grafoRutas = new grafo();
-var blockchainTransacciones = new cadena();
+var blockchainTransacciones = new cadenaBloques();
 
 // ******** RECUPERANDO ESTRUCTURAS DEL STORAGE *********
 function recuperarArbolB(){
@@ -1100,6 +1126,24 @@ function recuperacionNodosBodegas(nodo_actual){
     return nodo_actual;
 }
 
+function recuperarBlockchain(){
+    let blockchainString = localStorage.getItem("blockchain");
+    if(blockchainString != null){
+        // recuperando cadena de bloques
+        let blockchainJSON = JSON.parse(blockchainString);
+        let blockchainCircularJSON = CircularJSON.parse(blockchainJSON);
+        Object.assign(blockchainTransacciones, blockchainCircularJSON);
+
+        blockchainTransacciones.cadena.forEach(function(bloqueSerializado, index){
+            // recuperadno bloques
+            let bloqueRecuperado = new bloque(this[index].indice, this[index].data, this[index].hashAnterior,
+                                    this[index].dificultad, true, this[index].fecha, this[index].hash, this[index].nonce);
+            Object.assign(bloqueRecuperado, this[index]);
+            this[index] = bloqueRecuperado;
+
+        }, blockchainTransacciones.cadena);
+    }
+}
 
 // ******** CREACIÓN E INSERCIÓN DE DATOS *********
 function crearProductos(){
@@ -1221,6 +1265,12 @@ function actualizarVentasStorage(){
     let tablaHashCircularJSON = CircularJSON.stringify(tablaHashVentas);
     let tablaHashString = JSON.stringify(tablaHashCircularJSON);
     localStorage.setItem("ventas", tablaHashString);
+}
+
+function actualizarBlockchainStorage(){
+    let blockchainCircularJSON = CircularJSON.stringify(blockchainTransacciones);
+    let blockchainString = JSON.stringify(blockchainCircularJSON);
+    localStorage.setItem("blockchain", blockchainString);
 }
 
 function actualizarRutasStorage(){

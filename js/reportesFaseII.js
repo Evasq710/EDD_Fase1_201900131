@@ -231,6 +231,8 @@ function generarGrafoBlockchain(){
         textAreaDotBlockchain.innerHTML = DOTstring;
     }catch(error){
         console.log(error);
+        let DOTstring = blockchainTransacciones.generarDotBlockchain();
+        textAreaDotBlockchain.innerHTML = DOTstring;
         alert("Ocurrió un error en la generación del grafo de blockchain (Ver consola).")
     }
 }
